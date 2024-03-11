@@ -9,6 +9,7 @@ import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
 import androidx.compose.foundation.lazy.staggeredgrid.itemsIndexed
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -99,17 +100,17 @@ fun HomeScreen(
     }
 }
 
-@Preview
-@Composable
-fun HomeScreenContentPreview() {
-    MusingsTheme {
-        HomeScreen(
-            HomeState(
-                noteToday = null,
-                recentNotes = listOf(),
-                rFavNotes = listOf()
-            )
-        ) {}
-    }
-}
+//@Preview
+//@Composable
+//fun HomeScreenContentPreview() {
+//    MaterialTheme {
+//        HomeScreen(
+//            HomeState(
+//                noteToday = null,
+//                recentNotes = listOf(),
+//                rFavNotes = listOf()
+//            )
+//        ) {}
+//    }
+//}
 

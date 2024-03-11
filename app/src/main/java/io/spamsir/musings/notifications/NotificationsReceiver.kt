@@ -8,6 +8,7 @@ import android.content.Intent
 import android.os.Build
 import androidx.compose.runtime.collectAsState
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.viewmodel.viewModelFactory
 import io.spamsir.musings.MusingsApplication
 import io.spamsir.musings.data.Settings
 import io.spamsir.musings.data.SettingsManager
@@ -43,30 +44,29 @@ class NotificationsReceiver: BroadcastReceiver() {
             NotificationManager::class.java
         ) as NotificationManager
 
-        settingsManager = SettingsManager(MusingsApplication.applicationContext())
-        val settingsViewModel = SettingsViewModel(settingsManager)
-
-        CoroutineScope(Dispatchers.IO).launch {
-            settingsViewModel.loadSettings()
-
-            settingsViewModel.state.collect {
-                settings = it.settings
-            }
-        }
-
-        val dataSource = NoteDatabase.getInstance(p0, CoroutineScope(Dispatchers.IO)).noteDatabaseDao
-        val noteViewModel = NoteViewModel.getInstance(dataSource)
-
-        notificationManager.cancelNotifications()
-
-        notificationManager.sendNotification(
-            messageList[Random.nextInt(4)] + " " +messageList0[Random.nextInt(2)],
-            p0
-        )
-
-        // Schedule the next notification
-
-        val alarmMgr = MusingsApplication.applicationContext().getSystemService(Context.ALARM_SERVICE) as AlarmManager
+//        settingsManager = SettingsManager(MusingsApplication.applicationContext())
+//        val settingsViewModel = SettingsViewModel(settingsManager)
+//
+//        CoroutineScope(Dispatchers.IO).launch {
+//            settingsViewModel.loadSettings()
+//
+//            settingsViewModel.state.collect {
+//                settings = it.settings
+//            }
+//        }
+//
+//        val noteViewModel = viewModelFactory { NoteViewModel.Factory }
+//
+//        notificationManager.cancelNotifications()
+//
+//        notificationManager.sendNotification(
+//            messageList[Random.nextInt(4)] + " " +messageList0[Random.nextInt(2)],
+//            p0
+//        )
+//
+//        // Schedule the next notification
+//
+//        val alarmMgr = MusingsApplication.applicationContext().getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
 //        if (if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
 //            alarmMgr.canScheduleExactAlarms()

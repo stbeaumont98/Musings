@@ -51,6 +51,7 @@ import io.spamsir.musings.home.HomeScreen
 import io.spamsir.musings.viewmodels.AllNotesViewModel
 import io.spamsir.musings.viewmodels.FavoritesViewModel
 import io.spamsir.musings.viewmodels.HomeViewModel
+import io.spamsir.musings.viewmodels.NoteViewModel
 
 data class BottomNavigationItem(
     val title: String,
@@ -61,6 +62,8 @@ data class BottomNavigationItem(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(state: MainState, onEvent: (MainEvent) -> Unit, navEvent: (String) -> Unit) {
+
+    val noteViewModel: NoteViewModel = viewModel(factory = NoteViewModel.Factory)
 
     val homeViewModel: HomeViewModel = viewModel(factory = HomeViewModel.Factory)
     val allNotesViewModel: AllNotesViewModel = viewModel(factory = AllNotesViewModel.Factory)
@@ -88,12 +91,6 @@ fun MainScreen(state: MainState, onEvent: (MainEvent) -> Unit, navEvent: (String
 
     var selectedItemIndex by rememberSaveable {
         mutableIntStateOf(0)
-    }
-
-    LaunchedEffect(Unit) {
-        homeViewModel.loadData()
-        allNotesViewModel.loadData()
-        favoritesViewModel.loadData()
     }
 
     Scaffold (
@@ -143,7 +140,9 @@ fun MainScreen(state: MainState, onEvent: (MainEvent) -> Unit, navEvent: (String
             ) {
                 LazyColumn {
                     items(state.notesList) { note ->
-                        NoteListItem(note, navEvent)
+                        noteViewModel.loadData(note.noteId)
+                        val state = noteViewModel.state.collectAsState()
+                        NoteListItem(state.value, noteViewModel::onEvent, navEvent)
                     }
                 }
             }
@@ -186,14 +185,23 @@ fun MainScreen(state: MainState, onEvent: (MainEvent) -> Unit, navEvent: (String
             startDestination = "Home",
             modifier = Modifier.padding(innerPadding)) {
             composable("Home") {
+                LaunchedEffect(Unit) {
+                    homeViewModel.loadData()
+                }
                 val homeState = homeViewModel.state.collectAsState()
                 HomeScreen(homeState.value, navEvent)
             }
             composable("All Musings") {
+                LaunchedEffect(Unit) {
+                    allNotesViewModel.loadData()
+                }
                 val allNotesState = allNotesViewModel.state.collectAsState()
                 AllNotesScreen(allNotesState.value, navEvent)
             }
             composable("Favorites") {
+                LaunchedEffect(Unit) {
+                    favoritesViewModel.loadData()
+                }
                 val favoritesState = favoritesViewModel.state.collectAsState()
                 FavoritesScreen(favoritesState.value, navEvent)
             }

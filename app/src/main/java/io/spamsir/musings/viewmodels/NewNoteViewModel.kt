@@ -30,19 +30,6 @@ class NewNoteViewModel @Inject constructor(
     private val mutableState = MutableStateFlow(NewNoteState())
     val state = mutableState.asStateFlow()
 
-    fun onEvent(event: NewNoteEvent) {
-        when(event) {
-            is NewNoteEvent.SaveSettings -> { saveSettings(event.settings) }
-            is NewNoteEvent.SaveNote -> { noteDao.insert(event.note) }
-        }
-    }
-
-    private fun saveSettings(settings: Settings) {
-        viewModelScope.launch(Dispatchers.IO) {
-            settingsManager.saveSettings(settings)
-        }
-    }
-
     fun loadData(nextTime: Long) {
         viewModelScope.launch(Dispatchers.IO) {
             mutableState.value = mutableState.value.copy(
@@ -50,6 +37,20 @@ class NewNoteViewModel @Inject constructor(
                 settings = settingsManager.getSettings().stateIn(viewModelScope).value,
                 nextTime = nextTime
             )
+        }
+    }
+
+    fun onEvent(event: NewNoteEvent) {
+        when(event) {
+            is NewNoteEvent.SaveSettings -> { saveSettings(event.settings) }
+            is NewNoteEvent.SaveNote -> { noteDao.insert(event.note) }
+        }
+        loadData(state.value.nextTime)
+    }
+
+    private fun saveSettings(settings: Settings) {
+        viewModelScope.launch(Dispatchers.IO) {
+            settingsManager.saveSettings(settings)
         }
     }
 

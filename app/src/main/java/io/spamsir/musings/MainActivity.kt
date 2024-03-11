@@ -28,6 +28,7 @@ import io.spamsir.musings.main.MainScreen
 import io.spamsir.musings.newnote.NewNoteScreen
 import io.spamsir.musings.settings.SettingsScreen
 import io.spamsir.musings.ui.theme.MusingsTheme
+import io.spamsir.musings.viewmodels.AnnotationViewModel
 import io.spamsir.musings.viewmodels.MainViewModel
 import io.spamsir.musings.viewmodels.NewNoteViewModel
 import io.spamsir.musings.viewmodels.SettingsViewModel
@@ -42,6 +43,7 @@ class MainActivity : ComponentActivity() {
     private val settingsViewModel: SettingsViewModel by viewModels(factoryProducer = { SettingsViewModel.Factory })
     private val mainViewModel: MainViewModel by viewModels(factoryProducer = { MainViewModel.Factory })
     private val newNoteViewModel: NewNoteViewModel by viewModels(factoryProducer = { NewNoteViewModel.Factory })
+    private val annotationViewModel: AnnotationViewModel by viewModels(factoryProducer = { AnnotationViewModel.Factory })
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -105,7 +107,16 @@ class MainActivity : ComponentActivity() {
                             )
                         ) { navBackStackEntry ->
                             val noteId = navBackStackEntry.arguments?.getLong("noteId")
-                            noteId?.let { AnnotateScreen(it, navController) }
+                            noteId?.let {
+                                annotationViewModel.loadData(it)
+                                val state = annotationViewModel.state.collectAsState()
+                                AnnotateScreen(
+                                    state = state.value,
+                                    onEvent = annotationViewModel::onEvent
+                                ) {
+                                    dest -> navController.popBackStack(dest, false)
+                                }
+                            }
                         }
                     }
                 }

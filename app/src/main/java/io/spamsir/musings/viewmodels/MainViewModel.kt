@@ -71,6 +71,7 @@ class MainViewModel @Inject constructor(
             is MainEvent.OnQueryChange -> onSearchQueryChange(event.text)
             is MainEvent.OnToggle -> onToggleSearch()
         }
+        loadData()
     }
 
     companion object {

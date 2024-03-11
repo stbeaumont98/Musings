@@ -1,19 +1,16 @@
 package io.spamsir.musings.viewmodels
 
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.spamsir.musings.annotations.AnnotateState
-import io.spamsir.musings.data.Annotation
 import io.spamsir.musings.database.AnnotationDatabase
 import io.spamsir.musings.database.AnnotationDatabaseDao
 import io.spamsir.musings.database.NoteDatabase
 import io.spamsir.musings.database.NoteDatabaseDao
 import io.spamsir.musings.events.AnnotationEvent
-import io.spamsir.musings.events.NoteEvent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -46,7 +43,10 @@ class AnnotationViewModel @Inject constructor(
         when(event) {
             is AnnotationEvent.NewAnnotation -> { annotationDao.insert(event.annotation) }
             is AnnotationEvent.UpdateAnnotation -> { annotationDao.update(event.annotation.dateTime, event.annotation.content, event.annotation.noteId, event.annotation.annotationId) }
+            is AnnotationEvent.RemoveAnnotation -> { annotationDao.remove(event.id) }
+            is AnnotationEvent.UpdateNote -> { noteDao.update(event.key, event.isLiked) }
         }
+        loadData(state.value.noteId)
     }
 
     companion object {

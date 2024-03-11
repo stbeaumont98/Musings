@@ -56,6 +56,7 @@ class NoteViewModel @Inject constructor(
         when(event) {
             is NoteEvent.UpdateNote -> { noteDao.update(event.key, event.isLiked) }
         }
+        loadData(state.value.noteId)
     }
 
     init {

@@ -4,10 +4,6 @@ import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.core.app.AlarmManagerCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -19,15 +15,11 @@ import io.spamsir.musings.MusingsApplication
 import io.spamsir.musings.data.Settings
 import io.spamsir.musings.data.SettingsManager
 import io.spamsir.musings.events.SettingsEvent
-import io.spamsir.musings.main.MainState
 import io.spamsir.musings.notifications.NotificationsReceiver
 import io.spamsir.musings.settings.SettingsState
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -53,6 +45,7 @@ class SettingsViewModel @Inject constructor(
             is SettingsEvent.Save -> { saveSettings(event.settings) }
             is SettingsEvent.SetNotification -> { setNotification(event.time) }
         }
+        loadSettings()
     }
 
     private fun saveSettings(settings: Settings) {

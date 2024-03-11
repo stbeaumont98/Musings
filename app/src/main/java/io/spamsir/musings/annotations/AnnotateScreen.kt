@@ -22,6 +22,7 @@ import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconToggleButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -30,34 +31,20 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextRange
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import io.spamsir.musings.AnnotationItem
-import io.spamsir.musings.MusingsApplication
 import io.spamsir.musings.R
 import io.spamsir.musings.data.Annotation
-import io.spamsir.musings.data.Note
-import io.spamsir.musings.database.AnnotationDatabase
-import io.spamsir.musings.database.NoteDatabase
-import io.spamsir.musings.ui.theme.MusingsTheme
-import io.spamsir.musings.viewmodels.AnnotationViewModel
-import io.spamsir.musings.viewmodels.NoteViewModel
+import io.spamsir.musings.events.AnnotationEvent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -65,21 +52,9 @@ import java.util.Calendar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AnnotateScreen(state: AnnotateState, onEvent: (AnnotationEvent) -> Unit, noteId: Long, navController: NavController) {
+fun AnnotateScreen(state: AnnotateState, onEvent: (AnnotationEvent) -> Unit, navEvent: (String) -> Unit) {
 
     val focusRequester = remember { FocusRequester() }
-
-    val noteDataSource = NoteDatabase.getInstance(MusingsApplication.applicationContext(), CoroutineScope(Dispatchers.IO)).noteDatabaseDao
-    val noteViewModel = NoteViewModel.getInstance(noteDataSource)
-
-    val note = noteViewModel.getNote(noteId)
-
-    val dataSource = AnnotationDatabase.getInstance(MusingsApplication.applicationContext(), CoroutineScope(Dispatchers.IO)).annotationDatabaseDao
-    val annotationViewModel = AnnotationViewModel.getInstance(dataSource)
-
-    val annotations by annotationViewModel.getAnnotations(noteId).observeAsState()
-
-    Log.d("ANNOTATIONS:", annotations.toString())
 
     val isEditing = remember { mutableStateOf(false) }
     val isNew = remember { mutableStateOf(false) }
@@ -95,10 +70,10 @@ fun AnnotateScreen(state: AnnotateState, onEvent: (AnnotationEvent) -> Unit, not
         Scaffold (
             topBar = {
                 CenterAlignedTopAppBar(
-                    title = { Text(text = note.title) },
+                    title = { Text(text = state.title) },
                     navigationIcon = {
                         IconButton(onClick = {
-                            navController.popBackStack("main", false)
+                            navEvent("main")
                         }) {
                             Icon(
                                 imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
@@ -108,15 +83,15 @@ fun AnnotateScreen(state: AnnotateState, onEvent: (AnnotationEvent) -> Unit, not
                     },
                     actions = {
                         IconToggleButton(
-                            checked = note.isLiked,
+                            checked = state.isLiked,
                             onCheckedChange = {
                                 CoroutineScope(Dispatchers.IO).launch {
-                                    noteViewModel.updateNote(note.noteId, !note.isLiked)
+                                    onEvent(AnnotationEvent.UpdateNote(state.noteId, !state.isLiked))
                                 }
                             }
                         ) {
                             Icon(
-                                if (note.isLiked) painterResource(id = R.drawable.ic_btn_star) else painterResource(
+                                if (state.isLiked) painterResource(id = R.drawable.ic_btn_star) else painterResource(
                                     id = R.drawable.ic_btn_star_empty
                                 ), "Favorite"
                             )
@@ -150,15 +125,15 @@ fun AnnotateScreen(state: AnnotateState, onEvent: (AnnotationEvent) -> Unit, not
                                             val annotation = Annotation(
                                                 Calendar.getInstance().timeInMillis,
                                                 content.value,
-                                                noteId
+                                                state.noteId
                                             )
                                             if (isNew.value) {
                                                 Log.d("NEW ANNOTATION", annotation.toString())
-                                                annotationViewModel.newAnnotation(annotation)
+                                                onEvent(AnnotationEvent.NewAnnotation(annotation))
                                             } else {
                                                 Log.d("EDIT ANNOTATION", annotation.toString())
                                                 annotation.annotationId = annotationId.longValue
-                                                annotationViewModel.updateAnnotation(annotation)
+                                                onEvent(AnnotationEvent.UpdateAnnotation(annotation))
                                                 annotationId.longValue = -1L
                                             }
                                         }
@@ -174,7 +149,7 @@ fun AnnotateScreen(state: AnnotateState, onEvent: (AnnotationEvent) -> Unit, not
                                     content.value = ""
                                     if (!isNew.value) {
                                         CoroutineScope(Dispatchers.IO).launch {
-                                            annotationViewModel.removeAnnotation(annotationId.longValue)
+                                            onEvent(AnnotationEvent.RemoveAnnotation(annotationId.longValue))
                                             annotationId.longValue = -1L
                                         }
                                     } else {
@@ -209,12 +184,12 @@ fun AnnotateScreen(state: AnnotateState, onEvent: (AnnotationEvent) -> Unit, not
                     .padding(innerPadding)
             ) {
                 Text(
-                    text = note.content,
+                    text = state.content,
                     modifier = Modifier
                         .padding(16.dp)
                 )
                 LazyColumn {
-                    items(if (annotations != null) requireNotNull(annotations) else listOf()) { annotation ->
+                    items(state.annotations) { annotation ->
                         if (annotation.annotationId != annotationId.longValue) {
                             AnnotationItem(annotation) {
                                 isEditing.value = true
@@ -266,9 +241,17 @@ fun AnnotateScreen(state: AnnotateState, onEvent: (AnnotationEvent) -> Unit, not
 
 @Preview
 @Composable
-fun AnnotateScreenContentPreview() {
-    val note = Note(title = "Hello, World", content = "This is my first Musing! I'm not sure what to put here, so I'm just writing whatever.")
-    MusingsTheme {
-        AnnotateScreen(note.noteId, rememberNavController())
+fun AnnotateScreenPreview() {
+    MaterialTheme {
+        AnnotateScreen(AnnotateState(
+            title = "Title",
+            content = "Content",
+            isLiked = true,
+            annotations = listOf(
+                Annotation(
+                    content = "This is an annotation!"
+                )
+            )
+        ), {}) {}
     }
 }
