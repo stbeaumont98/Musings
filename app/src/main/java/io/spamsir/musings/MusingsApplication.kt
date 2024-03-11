@@ -2,7 +2,7 @@ package io.spamsir.musings
 
 import android.app.Application
 import android.content.Context
-import io.spamsir.musings.database.NoteDatabase
+import io.spamsir.musings.data.database.NoteDatabase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 

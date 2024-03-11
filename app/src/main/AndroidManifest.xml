@@ -16,7 +16,7 @@
         android:theme="@style/Theme.Musings"
         tools:targetApi="34">
         <activity
-            android:name=".MainActivity"
+            android:name=".ui.MainActivity"
             android:launchMode="singleTask"
             android:exported="true">
             <intent-filter>

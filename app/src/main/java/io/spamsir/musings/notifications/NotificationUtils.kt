@@ -6,7 +6,7 @@ import android.content.Context
 import android.content.Intent
 import java.util.Calendar
 import androidx.core.app.NotificationCompat
-import io.spamsir.musings.MainActivity
+import io.spamsir.musings.ui.MainActivity
 import io.spamsir.musings.R
 
 // Notification ID.

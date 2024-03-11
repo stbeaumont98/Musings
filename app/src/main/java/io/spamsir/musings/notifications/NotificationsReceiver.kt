@@ -1,25 +1,12 @@
 package io.spamsir.musings.notifications
 
-import android.app.AlarmManager
 import android.app.NotificationManager
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.os.Build
-import androidx.compose.runtime.collectAsState
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.viewmodel.viewModelFactory
-import io.spamsir.musings.MusingsApplication
-import io.spamsir.musings.data.Settings
-import io.spamsir.musings.data.SettingsManager
-import io.spamsir.musings.database.NoteDatabase
-import io.spamsir.musings.viewmodels.NoteViewModel
-import io.spamsir.musings.viewmodels.SettingsViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import java.util.Calendar
-import kotlin.random.Random
+import io.spamsir.musings.data.domain.Settings
+import io.spamsir.musings.data.database.SettingsManager
 
 class NotificationsReceiver: BroadcastReceiver() {
 
