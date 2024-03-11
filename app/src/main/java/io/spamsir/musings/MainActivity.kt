@@ -13,9 +13,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -23,7 +23,6 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import dagger.hilt.android.AndroidEntryPoint
 import io.spamsir.musings.annotations.AnnotateScreen
-import io.spamsir.musings.data.Settings
 import io.spamsir.musings.main.MainScreen
 import io.spamsir.musings.newnote.NewNoteScreen
 import io.spamsir.musings.settings.SettingsScreen
@@ -53,11 +52,7 @@ class MainActivity : ComponentActivity() {
             Calendar.getInstance().timeInMillis + 120000
         )
 
-        CoroutineScope(Dispatchers.IO).launch {
-            mainViewModel.loadData()
-            settingsViewModel.loadSettings()
-            newNoteViewModel.loadData(nextTime)
-        }
+        settingsViewModel.loadSettings()
 
         val settingsState = settingsViewModel.state
 
@@ -77,10 +72,16 @@ class MainActivity : ComponentActivity() {
                 ) {
                     NavHost(navController, startDestination = startDestination) {
                         composable("main") {
+                            LaunchedEffect(Unit) {
+                                mainViewModel.loadData()
+                            }
                             val state = mainViewModel.state.collectAsState()
                             MainScreen(state.value, mainViewModel::onEvent) { dest -> navController.navigate(dest) }
                         }
                         composable("settings") {
+                            LaunchedEffect(Unit) {
+                                settingsViewModel.loadSettings()
+                            }
                             val state = settingsViewModel.state.collectAsState()
                             SettingsScreen(state.value, settingsViewModel::onEvent) {
                                 dest -> navController.navigate(dest) {
@@ -90,6 +91,9 @@ class MainActivity : ComponentActivity() {
                             }
                         }
                         composable("new_note") {
+                            LaunchedEffect(Unit) {
+                                newNoteViewModel.loadData(nextTime)
+                            }
                             val state = newNoteViewModel.state.collectAsState()
                             NewNoteScreen(state.value, newNoteViewModel::onEvent) {
                                 navController.navigate("main") {
@@ -108,7 +112,9 @@ class MainActivity : ComponentActivity() {
                         ) { navBackStackEntry ->
                             val noteId = navBackStackEntry.arguments?.getLong("noteId")
                             noteId?.let {
-                                annotationViewModel.loadData(it)
+                                LaunchedEffect(Unit) {
+                                    annotationViewModel.loadData(it)
+                                }
                                 val state = annotationViewModel.state.collectAsState()
                                 AnnotateScreen(
                                     state = state.value,

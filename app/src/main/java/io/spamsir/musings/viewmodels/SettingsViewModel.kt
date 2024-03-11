@@ -33,7 +33,7 @@ class SettingsViewModel @Inject constructor(
     val state = mutableState.asStateFlow()
 
     fun loadSettings() {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             mutableState.value = mutableState.value.copy(
                 settings = settingsManager.getSettings().stateIn(viewModelScope).value
             )
