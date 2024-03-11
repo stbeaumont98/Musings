@@ -24,7 +24,7 @@ class FavoritesViewModel @Inject constructor(
 
     fun loadData() {
         viewModelScope.launch(Dispatchers.IO) {
-            mutableState.value = mutableState.value.copy(favNotes = noteDao.getAllNotes())
+            mutableState.value = mutableState.value.copy(favNotes = noteDao.getLikedNotes())
         }
     }
 
