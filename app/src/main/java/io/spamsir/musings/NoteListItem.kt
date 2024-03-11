@@ -23,6 +23,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import io.spamsir.musings.data.Note
 import io.spamsir.musings.database.NoteDatabase
+import io.spamsir.musings.events.NoteEvent
 import io.spamsir.musings.ui.theme.MusingsTheme
 import io.spamsir.musings.viewmodels.NoteViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -38,13 +39,13 @@ const val ONE_HOUR = 3600000
 const val ONE_DAY = 86400000
 
 @Composable
-fun NoteListItem(note: Note, navEvent: (String) -> Unit) {
+fun NoteListItem(state: NoteState, onEvent: (NoteEvent) -> Unit, navEvent: (String) -> Unit) {
     
     val formatter = SimpleDateFormat("MMMM d, yyyy", Locale.US)
     val dateText: String
 
     val cal = Calendar.getInstance()
-    cal.time = DateConverter.toDate(note.dateTime)
+    cal.time = DateConverter.toDate(state.dateTime)
 
     val diff = Calendar.getInstance().timeInMillis - cal.timeInMillis
     dateText = if (diff < ONE_MINUTE) {
@@ -54,12 +55,12 @@ fun NoteListItem(note: Note, navEvent: (String) -> Unit) {
     } else if (diff < ONE_DAY) {
         (diff / ONE_HOUR).toString() + " hour" + (if ((diff / ONE_HOUR).toInt() != 1) "s" else "") + " ago"
     } else {
-        formatter.format(DateConverter.toDate(note.dateTime))
+        formatter.format(DateConverter.toDate(state.dateTime))
     }
 
     Card(
         onClick = {
-            navEvent("annotate_screen/" + note.noteId.toString())
+            navEvent("annotate_screen/" + state.noteId.toString())
         },
         modifier = Modifier
             .padding(8.dp)
@@ -75,7 +76,7 @@ fun NoteListItem(note: Note, navEvent: (String) -> Unit) {
                             .padding(horizontal = 8.dp)
                     )
                     Text(
-                        text = if (note.title.length > 20) note.title.take(18) + "\u2026" else note.title,
+                        text = if (state.title.length > 20) state.title.take(18) + "\u2026" else state.title,
                         fontSize = 24.sp,
                         modifier = Modifier
                             .padding(horizontal = 8.dp)
@@ -87,7 +88,7 @@ fun NoteListItem(note: Note, navEvent: (String) -> Unit) {
                             CoroutineScope(Dispatchers.IO).launch {
                                 val sendIntent: Intent = Intent().apply {
                                     action = Intent.ACTION_SEND
-                                    putExtra(Intent.EXTRA_TEXT, note.title + "\n" + note.content)
+                                    putExtra(Intent.EXTRA_TEXT, state.title + "\n" + state.content)
                                     type = "text/plain"
                                 }
 
@@ -100,21 +101,15 @@ fun NoteListItem(note: Note, navEvent: (String) -> Unit) {
                         Icon(Icons.Rounded.Share, "Share")
                     }
                     FilledIconToggleButton(
-                        checked = note.isLiked,
+                        checked = state.isLiked,
                         onCheckedChange = {
                             CoroutineScope(Dispatchers.IO).launch {
-                                val dataSource = NoteDatabase.getInstance(
-                                    MusingsApplication.applicationContext(), CoroutineScope(
-                                        Dispatchers.IO
-                                    )
-                                ).noteDatabaseDao
-                                val noteViewModel = NoteViewModel.getInstance(dataSource)
-                                noteViewModel.updateNote(note.noteId, !note.isLiked)
+                                onEvent(NoteEvent.UpdateNote(state.noteId, !state.isLiked))
                             }
                         }
                     ) {
                         Icon(
-                            if (note.isLiked) painterResource(id = R.drawable.ic_btn_star) else painterResource(
+                            if (state.isLiked) painterResource(id = R.drawable.ic_btn_star) else painterResource(
                                 id = R.drawable.ic_btn_star_empty
                             ), "Favorite"
                         )
@@ -123,7 +118,7 @@ fun NoteListItem(note: Note, navEvent: (String) -> Unit) {
             }
 
             Text(
-                text = note.content,
+                text = state.content,
                 modifier = Modifier
                     .padding(start = 8.dp, end = 8.dp, bottom = 8.dp)
             )
@@ -136,6 +131,6 @@ fun NoteListItem(note: Note, navEvent: (String) -> Unit) {
 fun NoteListItemPreview() {
     val note = Note(Calendar.getInstance().timeInMillis, "Title", "Content...", false)
     MusingsTheme {
-        NoteListItem(note) {}
+        NoteListItem(NoteState(), {}) {}
     }
 }

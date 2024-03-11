@@ -3,6 +3,5 @@ package io.spamsir.musings.events
 import io.spamsir.musings.data.Note
 
 sealed class NoteEvent {
-    data class Save(val note: Note) : NoteEvent()
-    data object GetTodaysNote : NoteEvent()
+    data class UpdateNote(val key: Long, val isLiked: Boolean) : NoteEvent()
 }

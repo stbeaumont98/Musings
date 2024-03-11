@@ -18,7 +18,7 @@ interface AnnotationDatabaseDao {
     fun get(key: Long): Annotation?
 
     @Query("SELECT * FROM annotations_table WHERE note_id = :key ORDER BY date_time")
-    fun getList(key: Long): LiveData<List<Annotation>>
+    fun getList(key: Long): List<Annotation>
 
     @Query("DELETE FROM annotations_table WHERE annotationId = :key")
     fun remove(key: Long)

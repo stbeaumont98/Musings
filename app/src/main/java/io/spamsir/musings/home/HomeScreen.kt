@@ -12,15 +12,18 @@ import androidx.compose.foundation.lazy.staggeredgrid.itemsIndexed
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import io.spamsir.musings.DateConverter
 import io.spamsir.musings.NoteListItem
 import io.spamsir.musings.NoteListItemSimplified
 import io.spamsir.musings.ui.theme.MusingsTheme
+import io.spamsir.musings.viewmodels.NoteViewModel
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -30,6 +33,8 @@ fun HomeScreen(
     state: HomeState,
     navEvent: (String) -> Unit
 ) {
+
+    val noteViewModel: NoteViewModel = viewModel(factory = NoteViewModel.Factory)
     val formatter = SimpleDateFormat("MMMM d, yyyy", Locale.US)
 
     Surface(
@@ -48,7 +53,9 @@ fun HomeScreen(
             }
             if (state.noteToday != null) {
                 item(span = StaggeredGridItemSpan.FullLine) {
-                    NoteListItem(state.noteToday, navEvent)
+                    noteViewModel.loadData(state.noteToday.noteId)
+                    val noteState = noteViewModel.state.collectAsState()
+                    NoteListItem(noteState.value, noteViewModel::onEvent, navEvent)
                 }
             } else {
                 item(span = StaggeredGridItemSpan.FullLine) {
@@ -69,7 +76,9 @@ fun HomeScreen(
                     )
                 }
                 itemsIndexed(state.recentNotes) { _, item ->
-                    NoteListItemSimplified(item, navEvent)
+                    noteViewModel.loadData(item.noteId)
+                    val noteState = noteViewModel.state.collectAsState()
+                    NoteListItemSimplified(noteState.value, noteViewModel::onEvent, navEvent)
                 }
             }
             if (state.rFavNotes.isNotEmpty()) {
@@ -81,7 +90,9 @@ fun HomeScreen(
                     )
                 }
                 itemsIndexed(state.rFavNotes) { _, item ->
-                    NoteListItemSimplified(item, navEvent)
+                    noteViewModel.loadData(item.noteId)
+                    val noteState = noteViewModel.state.collectAsState()
+                    NoteListItemSimplified(noteState.value, noteViewModel::onEvent, navEvent)
                 }
             }
         }

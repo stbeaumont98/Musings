@@ -9,11 +9,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import io.spamsir.musings.NoteListItem
@@ -23,6 +25,8 @@ import io.spamsir.musings.viewmodels.NoteViewModel
 
 @Composable
 fun AllNotesScreen(state: AllNotesState, navEvent: (String) -> Unit) {
+
+    val noteViewModel: NoteViewModel = viewModel(factory = NoteViewModel.Factory)
 
     Surface(
         Modifier.fillMaxSize()
@@ -38,7 +42,9 @@ fun AllNotesScreen(state: AllNotesState, navEvent: (String) -> Unit) {
         } else {
             LazyColumn(modifier = Modifier.fillMaxSize()) {
                 itemsIndexed(state.allNotes) { _, item ->
-                    NoteListItem(item, navEvent)
+                    noteViewModel.loadData(item.noteId)
+                    val noteState = noteViewModel.state.collectAsState()
+                    NoteListItem(noteState.value, noteViewModel::onEvent, navEvent)
                 }
             }
         }

@@ -34,6 +34,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import io.spamsir.musings.data.Note
 import io.spamsir.musings.database.NoteDatabase
+import io.spamsir.musings.events.NoteEvent
 import io.spamsir.musings.viewmodels.NoteViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -43,7 +44,7 @@ import java.util.Calendar
 import java.util.Locale
 
 @Composable
-fun NoteListItemSimplified(note: Note, navEvent: (String) -> Unit) {
+fun NoteListItemSimplified(state: NoteState, onEvent: (NoteEvent) -> Unit, navEvent: (String) -> Unit) {
 
     var expanded by remember { mutableStateOf(false) }
     
@@ -51,7 +52,7 @@ fun NoteListItemSimplified(note: Note, navEvent: (String) -> Unit) {
     val dateText: String
 
     val cal = Calendar.getInstance()
-    cal.time = DateConverter.toDate(note.dateTime)
+    cal.time = DateConverter.toDate(state.dateTime)
 
     val diff = Calendar.getInstance().timeInMillis - cal.timeInMillis
     dateText = if (diff < ONE_MINUTE) {
@@ -61,12 +62,12 @@ fun NoteListItemSimplified(note: Note, navEvent: (String) -> Unit) {
     } else if (diff < ONE_DAY) {
         (diff / ONE_HOUR).toString() + " hour" + (if ((diff / ONE_HOUR).toInt() != 1) "s" else "") + " ago"
     } else {
-        formatter.format(DateConverter.toDate(note.dateTime))
+        formatter.format(DateConverter.toDate(state.dateTime))
     }
 
     Card(
         onClick = {
-            navEvent("annotate_screen/" + note.noteId.toString())
+            navEvent("annotate_screen/" + state.noteId.toString())
         },
         modifier = Modifier
             .padding(6.dp)
@@ -84,7 +85,7 @@ fun NoteListItemSimplified(note: Note, navEvent: (String) -> Unit) {
                             .padding(horizontal = 8.dp)
                     )
                     Text(
-                        text = if (note.title.length > 9) note.title.take(7) + "\u2026" else note.title,
+                        text = if (state.title.length > 9) state.title.take(7) + "\u2026" else state.title,
                         fontSize = 24.sp,
                         modifier = Modifier
                             .padding(horizontal = 8.dp)
@@ -108,18 +109,12 @@ fun NoteListItemSimplified(note: Note, navEvent: (String) -> Unit) {
                             text = { Text("Favorite") },
                             onClick = {
                                 CoroutineScope(Dispatchers.IO).launch {
-                                    val dataSource = NoteDatabase.getInstance(
-                                        MusingsApplication.applicationContext(), CoroutineScope(
-                                            Dispatchers.IO
-                                        )
-                                    ).noteDatabaseDao
-                                    val noteViewModel = NoteViewModel.getInstance(dataSource)
-                                    noteViewModel.updateNote(note.noteId, !note.isLiked)
+                                    onEvent(NoteEvent.UpdateNote(state.noteId, !state.isLiked))
                                 }
                             },
                             leadingIcon = {
                                 Icon(
-                                    if (note.isLiked) painterResource(id = R.drawable.ic_btn_star) else painterResource(
+                                    if (state.isLiked) painterResource(id = R.drawable.ic_btn_star) else painterResource(
                                         id = R.drawable.ic_btn_star_empty
                                     ), "Favorite"
                                 )
@@ -132,7 +127,7 @@ fun NoteListItemSimplified(note: Note, navEvent: (String) -> Unit) {
                                         action = Intent.ACTION_SEND
                                         putExtra(
                                             Intent.EXTRA_TEXT,
-                                            note.title + "\n" + note.content
+                                            state.title + "\n" + state.content
                                         )
                                         type = "text/plain"
                                     }
@@ -150,7 +145,7 @@ fun NoteListItemSimplified(note: Note, navEvent: (String) -> Unit) {
                 }
             }
             Text(
-                text = note.content,
+                text = state.content,
                 modifier = Modifier
                     .padding(start = 8.dp, end = 8.dp, bottom = 8.dp)
             )
@@ -163,6 +158,6 @@ fun NoteListItemSimplified(note: Note, navEvent: (String) -> Unit) {
 fun NoteListItemSimplifiedPreview() {
     val note = Note(Calendar.getInstance().timeInMillis, "Title", "This is the content of this Musing!", false)
     MaterialTheme {
-        NoteListItemSimplified(note) {}
+        NoteListItemSimplified(NoteState(), {}) {}
     }
 }

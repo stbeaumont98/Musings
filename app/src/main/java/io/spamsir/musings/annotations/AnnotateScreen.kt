@@ -65,7 +65,7 @@ import java.util.Calendar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AnnotateScreen(noteId: Long, navController: NavController) {
+fun AnnotateScreen(state: AnnotateState, onEvent: (AnnotationEvent) -> Unit, noteId: Long, navController: NavController) {
 
     val focusRequester = remember { FocusRequester() }
 

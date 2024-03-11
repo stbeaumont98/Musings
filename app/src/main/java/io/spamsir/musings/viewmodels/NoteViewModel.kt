@@ -15,6 +15,8 @@ import io.spamsir.musings.NoteState
 import io.spamsir.musings.data.Note
 import io.spamsir.musings.database.NoteDatabase
 import io.spamsir.musings.database.NoteDatabaseDao
+import io.spamsir.musings.events.NoteEvent
+import io.spamsir.musings.events.SettingsEvent
 import io.spamsir.musings.notifications.NotificationsReceiver
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -30,8 +32,6 @@ class NoteViewModel @Inject constructor(
 
     private val mutableState = MutableStateFlow(NoteState())
     val state = mutableState.asStateFlow()
-    fun updateNote(key: Long, isLiked: Boolean) = noteDao.update(key, isLiked)
-    fun getNote(key: Long) : Note = noteDao.get(key)
 
     private val REQUEST_CODE = 0
 
@@ -43,11 +43,18 @@ class NoteViewModel @Inject constructor(
     fun loadData(key: Long) {
         viewModelScope.launch(Dispatchers.IO) {
             mutableState.value = mutableState.value.copy(
+                noteId = key,
                 dateTime = noteDao.get(key).dateTime,
                 title = noteDao.get(key).title,
                 content = noteDao.get(key).content,
                 isLiked = noteDao.get(key).isLiked
             )
+        }
+    }
+
+    fun onEvent(event: NoteEvent) {
+        when(event) {
+            is NoteEvent.UpdateNote -> { noteDao.update(event.key, event.isLiked) }
         }
     }
 
@@ -78,7 +85,7 @@ class NoteViewModel @Inject constructor(
                     Dispatchers.IO)
                 ).noteDatabaseDao
 
-                return AllNotesViewModel(dataSource) as T
+                return NoteViewModel(dataSource) as T
             }
         }
     }
