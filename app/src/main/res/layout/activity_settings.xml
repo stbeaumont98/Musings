@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".SettingsActivity">
+
+    <data>
+        <variable
+            name="noteViewModel"
+            type="io.spamsir.musings.viewmodels.NoteViewModel" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/appBarLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fitsSystemWindows="true">
+
+            <com.google.android.material.appbar.MaterialToolbar
+                android:id="@+id/top_app_bar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:elevation="0dp"
+                app:menu="@menu/settings"
+                app:navigationIcon="@drawable/ic_arrow_back"
+                app:title="@string/settings"
+                app:titleCentered="true" />
+
+        </com.google.android.material.appbar.AppBarLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="User name (optional)"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            app:startIconDrawable="@drawable/ic_profile">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edit_text_name"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:inputType="text|textPersonName" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="10dp">
+
+            <ImageView
+                android:id="@+id/icon_active_hours"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:srcCompat="@drawable/ic_time" />
+
+            <TextView
+                android:id="@+id/label_active_hours"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:paddingStart="10dp"
+                android:text="Active Hours" />
+
+        </LinearLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Start Time"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edit_text_start_time"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:cursorVisible="false"
+                android:focusable="false"
+                android:focusableInTouchMode="false"
+                android:inputType="none|textNoSuggestions" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="End Time"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edit_text_end_time"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:cursorVisible="false"
+                android:focusable="false"
+                android:focusableInTouchMode="false"
+                android:inputType="none|textNoSuggestions" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+    </LinearLayout>
+</layout>
