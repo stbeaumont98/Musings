@@ -138,9 +138,7 @@ fun MainScreen(state: MainState, onEvent: (MainEvent) -> Unit, navEvent: (String
             ) {
                 LazyColumn {
                     items(state.notesList) { note ->
-                        noteViewModel.loadData(note.noteId)
-                        val state = noteViewModel.state.collectAsState()
-                        NoteListItem(state.value, noteViewModel::onEvent, navEvent)
+                        NoteListItem(note, noteViewModel::onEvent, navEvent)
                     }
                 }
             }

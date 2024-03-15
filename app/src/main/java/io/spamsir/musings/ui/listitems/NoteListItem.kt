@@ -37,13 +37,13 @@ const val ONE_HOUR = 3600000
 const val ONE_DAY = 86400000
 
 @Composable
-fun NoteListItem(state: NoteState, onEvent: (NoteEvent) -> Unit, navEvent: (String) -> Unit) {
+fun NoteListItem(note: Note, onEvent: (NoteEvent) -> Unit, navEvent: (String) -> Unit) {
     
     val formatter = SimpleDateFormat("MMMM d, yyyy", Locale.US)
     val dateText: String
 
     val cal = Calendar.getInstance()
-    cal.time = DateConverter.toDate(state.dateTime)
+    cal.time = DateConverter.toDate(note.dateTime)
 
     val diff = Calendar.getInstance().timeInMillis - cal.timeInMillis
     dateText = if (diff < ONE_MINUTE) {
@@ -53,12 +53,12 @@ fun NoteListItem(state: NoteState, onEvent: (NoteEvent) -> Unit, navEvent: (Stri
     } else if (diff < ONE_DAY) {
         (diff / ONE_HOUR).toString() + " hour" + (if ((diff / ONE_HOUR).toInt() != 1) "s" else "") + " ago"
     } else {
-        formatter.format(DateConverter.toDate(state.dateTime))
+        formatter.format(DateConverter.toDate(note.dateTime))
     }
 
     Card(
         onClick = {
-            navEvent("annotate_screen/" + state.noteId.toString())
+            navEvent("annotate_screen/" + note.noteId.toString())
         },
         modifier = Modifier
             .padding(8.dp)
@@ -74,7 +74,7 @@ fun NoteListItem(state: NoteState, onEvent: (NoteEvent) -> Unit, navEvent: (Stri
                             .padding(horizontal = 8.dp)
                     )
                     Text(
-                        text = if (state.title.length > 20) state.title.take(18) + "\u2026" else state.title,
+                        text = if (note.title.length > 20) note.title.take(18) + "\u2026" else note.title,
                         fontSize = 24.sp,
                         modifier = Modifier
                             .padding(horizontal = 8.dp)
@@ -86,7 +86,7 @@ fun NoteListItem(state: NoteState, onEvent: (NoteEvent) -> Unit, navEvent: (Stri
                             CoroutineScope(Dispatchers.IO).launch {
                                 val sendIntent: Intent = Intent().apply {
                                     action = Intent.ACTION_SEND
-                                    putExtra(Intent.EXTRA_TEXT, state.title + "\n" + state.content)
+                                    putExtra(Intent.EXTRA_TEXT, note.title + "\n" + note.content)
                                     type = "text/plain"
                                 }
 
@@ -99,15 +99,15 @@ fun NoteListItem(state: NoteState, onEvent: (NoteEvent) -> Unit, navEvent: (Stri
                         Icon(Icons.Rounded.Share, "Share")
                     }
                     FilledIconToggleButton(
-                        checked = state.isLiked,
+                        checked = note.isLiked,
                         onCheckedChange = {
                             CoroutineScope(Dispatchers.IO).launch {
-                                onEvent(NoteEvent.UpdateNote(state.noteId, !state.isLiked))
+                                onEvent(NoteEvent.UpdateNote(note.noteId, !note.isLiked))
                             }
                         }
                     ) {
                         Icon(
-                            if (state.isLiked) painterResource(id = R.drawable.ic_btn_star) else painterResource(
+                            if (note.isLiked) painterResource(id = R.drawable.ic_btn_star) else painterResource(
                                 id = R.drawable.ic_btn_star_empty
                             ), "Favorite"
                         )
@@ -116,7 +116,7 @@ fun NoteListItem(state: NoteState, onEvent: (NoteEvent) -> Unit, navEvent: (Stri
             }
 
             Text(
-                text = state.content,
+                text = note.content,
                 modifier = Modifier
                     .padding(start = 8.dp, end = 8.dp, bottom = 8.dp)
             )
@@ -129,6 +129,6 @@ fun NoteListItem(state: NoteState, onEvent: (NoteEvent) -> Unit, navEvent: (Stri
 fun NoteListItemPreview() {
     val note = Note(Calendar.getInstance().timeInMillis, "Title", "Content...", false)
     MusingsTheme {
-        NoteListItem(NoteState(), {}) {}
+        NoteListItem(note, {}) {}
     }
 }

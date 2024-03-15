@@ -41,7 +41,7 @@ import java.util.Calendar
 import java.util.Locale
 
 @Composable
-fun NoteListItemSimplified(state: NoteState, onEvent: (NoteEvent) -> Unit, navEvent: (String) -> Unit) {
+fun NoteListItemSimplified(note: Note, onEvent: (NoteEvent) -> Unit, navEvent: (String) -> Unit) {
 
     var expanded by remember { mutableStateOf(false) }
     
@@ -49,7 +49,7 @@ fun NoteListItemSimplified(state: NoteState, onEvent: (NoteEvent) -> Unit, navEv
     val dateText: String
 
     val cal = Calendar.getInstance()
-    cal.time = DateConverter.toDate(state.dateTime)
+    cal.time = DateConverter.toDate(note.dateTime)
 
     val diff = Calendar.getInstance().timeInMillis - cal.timeInMillis
     dateText = if (diff < ONE_MINUTE) {
@@ -59,12 +59,12 @@ fun NoteListItemSimplified(state: NoteState, onEvent: (NoteEvent) -> Unit, navEv
     } else if (diff < ONE_DAY) {
         (diff / ONE_HOUR).toString() + " hour" + (if ((diff / ONE_HOUR).toInt() != 1) "s" else "") + " ago"
     } else {
-        formatter.format(DateConverter.toDate(state.dateTime))
+        formatter.format(DateConverter.toDate(note.dateTime))
     }
 
     Card(
         onClick = {
-            navEvent("annotate_screen/" + state.noteId.toString())
+            navEvent("annotate_screen/" + note.noteId.toString())
         },
         modifier = Modifier
             .padding(6.dp)
@@ -82,7 +82,7 @@ fun NoteListItemSimplified(state: NoteState, onEvent: (NoteEvent) -> Unit, navEv
                             .padding(horizontal = 8.dp)
                     )
                     Text(
-                        text = if (state.title.length > 9) state.title.take(7) + "\u2026" else state.title,
+                        text = if (note.title.length > 9) note.title.take(7) + "\u2026" else note.title,
                         fontSize = 24.sp,
                         modifier = Modifier
                             .padding(horizontal = 8.dp)
@@ -106,12 +106,12 @@ fun NoteListItemSimplified(state: NoteState, onEvent: (NoteEvent) -> Unit, navEv
                             text = { Text("Favorite") },
                             onClick = {
                                 CoroutineScope(Dispatchers.IO).launch {
-                                    onEvent(NoteEvent.UpdateNote(state.noteId, !state.isLiked))
+                                    onEvent(NoteEvent.UpdateNote(note.noteId, !note.isLiked))
                                 }
                             },
                             leadingIcon = {
                                 Icon(
-                                    if (state.isLiked) painterResource(id = R.drawable.ic_btn_star) else painterResource(
+                                    if (note.isLiked) painterResource(id = R.drawable.ic_btn_star) else painterResource(
                                         id = R.drawable.ic_btn_star_empty
                                     ), "Favorite"
                                 )
@@ -124,7 +124,7 @@ fun NoteListItemSimplified(state: NoteState, onEvent: (NoteEvent) -> Unit, navEv
                                         action = Intent.ACTION_SEND
                                         putExtra(
                                             Intent.EXTRA_TEXT,
-                                            state.title + "\n" + state.content
+                                            note.title + "\n" + note.content
                                         )
                                         type = "text/plain"
                                     }
@@ -142,7 +142,7 @@ fun NoteListItemSimplified(state: NoteState, onEvent: (NoteEvent) -> Unit, navEv
                 }
             }
             Text(
-                text = state.content,
+                text = note.content,
                 modifier = Modifier
                     .padding(start = 8.dp, end = 8.dp, bottom = 8.dp)
             )
@@ -155,6 +155,6 @@ fun NoteListItemSimplified(state: NoteState, onEvent: (NoteEvent) -> Unit, navEv
 fun NoteListItemSimplifiedPreview() {
     val note = Note(Calendar.getInstance().timeInMillis, "Title", "This is the content of this Musing!", false)
     MaterialTheme {
-        NoteListItemSimplified(NoteState(), {}) {}
+        NoteListItemSimplified(note, {}) {}
     }
 }

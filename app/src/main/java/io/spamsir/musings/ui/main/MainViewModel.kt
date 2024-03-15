@@ -1,5 +1,6 @@
 package io.spamsir.musings.ui.main
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -24,29 +25,12 @@ class MainViewModel @Inject constructor(
     private val mutableState = MutableStateFlow(MainState())
     val state = mutableState.asStateFlow()
 
-    private val _searchQuery = MutableStateFlow("")
-    private val searchQuery = _searchQuery.asStateFlow()
-
-    private val _notesList = MutableStateFlow(state.value.allNotes)
-
     fun loadData() {
         viewModelScope.launch(Dispatchers.IO) {
             mutableState.value = mutableState.value.copy(
                 allNotes = noteDao.getAllNotes(),
-                notesList = searchQuery
-                    .combine(_notesList) { text, notes ->
-                        if (text.isBlank()) {
-                            notes
-                        }
-                        notes.filter { note ->
-                            note.title.uppercase().contains(text.trim().uppercase()) ||
-                                    note.content.uppercase().contains(text.trim().uppercase())
-                        }
-                    }.stateIn(
-                        scope = viewModelScope,
-                        started = SharingStarted.WhileSubscribed(5000),
-                        initialValue = _notesList.value
-                    ).value
+                notesList = state.value.allNotes.filter { note -> note.title.uppercase().contains(state.value.searchQuery.trim().uppercase()) ||
+                        note.content.uppercase().contains(state.value.searchQuery.trim().uppercase()) }
             )
         }
     }

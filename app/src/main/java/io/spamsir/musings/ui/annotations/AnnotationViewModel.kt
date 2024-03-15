@@ -38,7 +38,7 @@ class AnnotationViewModel @Inject constructor(
     }
 
     fun onEvent(event: AnnotationEvent) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             when (event) {
                 is AnnotationEvent.NewAnnotation -> {
                     annotationDao.insert(event.annotation)
