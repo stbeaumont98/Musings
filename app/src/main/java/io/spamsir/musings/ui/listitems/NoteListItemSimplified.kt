@@ -82,7 +82,7 @@ fun NoteListItemSimplified(note: Note, onEvent: (NoteEvent) -> Unit, navEvent: (
                             .padding(horizontal = 8.dp)
                     )
                     Text(
-                        text = if (note.title.length > 9) note.title.take(7) + "\u2026" else note.title,
+                        text = if (note.title.length > 7) note.title.take(6) + "\u2026" else note.title,
                         fontSize = 24.sp,
                         modifier = Modifier
                             .padding(horizontal = 8.dp)
