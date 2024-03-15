@@ -52,16 +52,17 @@ class MainActivity : ComponentActivity() {
 
         settingsViewModel.loadSettings()
 
-        val settingsState = settingsViewModel.state
-
         val fromNotification = intent.getBooleanExtra("from_notification", false)
 
-        val startDestination =
-            if (fromNotification) "new_note" else if (settingsState.value.settings.firstLaunch) "settings" else "main"
 
         setContent {
             MusingsTheme {
                 val navController = rememberNavController()
+
+                val settingsState = settingsViewModel.state.collectAsState()
+
+                val startDestination =
+                    if (fromNotification) "new_note" else if (settingsState.value.settings.firstLaunch) "settings" else "main"
 
                 Surface(
                     modifier = Modifier

@@ -13,6 +13,7 @@ import androidx.lifecycle.viewmodel.CreationExtras
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.spamsir.musings.MusingsApplication
 import io.spamsir.musings.data.database.SettingsManager
+import io.spamsir.musings.data.domain.Settings
 import io.spamsir.musings.notifications.NotificationsReceiver
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -67,6 +68,9 @@ class SettingsViewModel @Inject constructor(
             REQUEST_CODE,
             notifyIntent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+        mutableState.value = mutableState.value.copy(
+            settings = Settings(firstLaunch = false)
         )
     }
 
