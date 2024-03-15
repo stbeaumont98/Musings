@@ -18,6 +18,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -36,6 +37,8 @@ import java.util.Calendar
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NewNoteScreen(state: NewNoteState, onEvent: (NewNoteEvent) -> Unit, navEvent: () -> Unit) {
+
+    val showTodayDialog = remember { mutableStateOf(false) }
 
     val subtitle = remember { mutableStateOf("2:00") }
 
@@ -65,6 +68,10 @@ fun NewNoteScreen(state: NewNoteState, onEvent: (NewNoteEvent) -> Unit, navEvent
             )
         }
     ) { innerPadding ->
+
+        LaunchedEffect(Unit) {
+            showTodayDialog.value = (state.noteToday != null)
+        }
 
         val title = remember { mutableStateOf("") }
         val content = remember { mutableStateOf("") }
@@ -183,7 +190,9 @@ fun NewNoteScreen(state: NewNoteState, onEvent: (NewNoteEvent) -> Unit, navEvent
                     }
                     navEvent()
                 }) {}
-        } else if (state.noteToday != null) {
+        }
+
+        if (showTodayDialog.value) {
             AlertDialog(
                 title = "Too bad!",
                 message = "A Musing was already recorded today. Try again tomorrow!",
