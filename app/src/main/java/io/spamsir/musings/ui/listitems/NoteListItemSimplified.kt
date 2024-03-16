@@ -105,9 +105,7 @@ fun NoteListItemSimplified(note: Note, onEvent: (NoteEvent) -> Unit, navEvent: (
                         DropdownMenuItem(
                             text = { Text("Favorite") },
                             onClick = {
-                                CoroutineScope(Dispatchers.IO).launch {
-                                    onEvent(NoteEvent.UpdateNote(note.noteId, !note.isLiked))
-                                }
+                                onEvent(NoteEvent.UpdateNote(note.noteId, !note.isLiked))
                             },
                             leadingIcon = {
                                 Icon(

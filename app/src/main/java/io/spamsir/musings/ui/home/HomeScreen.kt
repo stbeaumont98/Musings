@@ -16,11 +16,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import io.spamsir.musings.DateConverter
+import io.spamsir.musings.ui.listitems.NoteEvent
 import io.spamsir.musings.ui.listitems.NoteListItem
 import io.spamsir.musings.ui.listitems.NoteListItemSimplified
-import io.spamsir.musings.ui.listitems.NoteViewModel
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -28,10 +27,10 @@ import java.util.Locale
 @Composable
 fun HomeScreen(
     state: HomeState,
+    onEvent: (NoteEvent) -> Unit,
     navEvent: (String) -> Unit
 ) {
 
-    val noteViewModel: NoteViewModel = viewModel(factory = NoteViewModel.Factory)
     val formatter = SimpleDateFormat("MMMM d, yyyy", Locale.US)
 
     Surface(
@@ -50,7 +49,7 @@ fun HomeScreen(
             }
             if (state.noteToday != null) {
                 item(span = StaggeredGridItemSpan.FullLine) {
-                    NoteListItem(state.noteToday, noteViewModel::onEvent, navEvent)
+                    NoteListItem(state.noteToday, onEvent, navEvent)
                 }
             } else {
                 item(span = StaggeredGridItemSpan.FullLine) {
@@ -71,7 +70,7 @@ fun HomeScreen(
                     )
                 }
                 itemsIndexed(state.recentNotes) { _, item ->
-                    NoteListItemSimplified(item, noteViewModel::onEvent, navEvent)
+                    NoteListItemSimplified(item, onEvent, navEvent)
                 }
             }
             if (state.rFavNotes.isNotEmpty()) {
@@ -83,7 +82,7 @@ fun HomeScreen(
                     )
                 }
                 itemsIndexed(state.rFavNotes) { _, item ->
-                    NoteListItemSimplified(item, noteViewModel::onEvent, navEvent)
+                    NoteListItemSimplified(item, onEvent, navEvent)
                 }
             }
         }

@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
+import androidx.core.view.WindowCompat
 
 private val LightColors = lightColorScheme(
     primary = md_theme_light_primary,
@@ -94,6 +95,7 @@ fun MusingsTheme(
     val view = LocalView.current
     val window = (view.context as Activity).window
     window.statusBarColor = colors.background.toArgb()
+    WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !useDarkTheme
 
   MaterialTheme(
     colorScheme = colors,

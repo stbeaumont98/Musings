@@ -8,6 +8,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import io.spamsir.musings.data.domain.Note
 import io.spamsir.musings.data.database.NoteDatabase
 import io.spamsir.musings.data.database.NoteDatabaseDao
+import io.spamsir.musings.ui.listitems.NoteEvent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -31,6 +32,17 @@ class HomeViewModel @Inject constructor(
                 recentNotes = recentNotes(),
                 rFavNotes = recentNotes(true)
             )
+        }
+    }
+
+    fun onEvent(event: NoteEvent) {
+        viewModelScope.launch(Dispatchers.IO) {
+            when (event) {
+                is NoteEvent.UpdateNote -> {
+                    noteDao.update(event.key, event.isLiked)
+                }
+            }
+            loadData()
         }
     }
 

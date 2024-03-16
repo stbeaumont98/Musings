@@ -7,6 +7,7 @@ import androidx.lifecycle.viewmodel.CreationExtras
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.spamsir.musings.data.database.NoteDatabase
 import io.spamsir.musings.data.database.NoteDatabaseDao
+import io.spamsir.musings.ui.listitems.NoteEvent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -25,6 +26,17 @@ class AllNotesViewModel @Inject constructor(
     fun loadData() {
         viewModelScope.launch(Dispatchers.IO) {
             mutableState.value = mutableState.value.copy(allNotes = noteDao.getAllNotes())
+        }
+    }
+
+    fun onEvent(event: NoteEvent) {
+        viewModelScope.launch(Dispatchers.IO) {
+            when (event) {
+                is NoteEvent.UpdateNote -> {
+                    noteDao.update(event.key, event.isLiked)
+                }
+            }
+            loadData()
         }
     }
 

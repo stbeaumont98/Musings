@@ -101,9 +101,7 @@ fun NoteListItem(note: Note, onEvent: (NoteEvent) -> Unit, navEvent: (String) ->
                     FilledIconToggleButton(
                         checked = note.isLiked,
                         onCheckedChange = {
-                            CoroutineScope(Dispatchers.IO).launch {
-                                onEvent(NoteEvent.UpdateNote(note.noteId, !note.isLiked))
-                            }
+                            onEvent(NoteEvent.UpdateNote(note.noteId, !note.isLiked))
                         }
                     ) {
                         Icon(

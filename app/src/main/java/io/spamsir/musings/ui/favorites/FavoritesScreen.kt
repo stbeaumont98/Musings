@@ -10,14 +10,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.viewmodel.compose.viewModel
+import io.spamsir.musings.ui.listitems.NoteEvent
 import io.spamsir.musings.ui.listitems.NoteListItem
-import io.spamsir.musings.ui.listitems.NoteViewModel
 
 @Composable
-fun FavoritesScreen(state: FavoritesState, navEvent: (String) -> Unit) {
-
-    val noteViewModel: NoteViewModel = viewModel(factory = NoteViewModel.Factory)
+fun FavoritesScreen(state: FavoritesState, onEvent: (NoteEvent) -> Unit, navEvent: (String) -> Unit) {
 
     Surface(
         Modifier.fillMaxSize()
@@ -33,7 +30,7 @@ fun FavoritesScreen(state: FavoritesState, navEvent: (String) -> Unit) {
         } else {
             LazyColumn(modifier = Modifier.fillMaxSize()) {
                 itemsIndexed(state.favNotes) { _, item ->
-                    NoteListItem(item, noteViewModel::onEvent, navEvent)
+                    NoteListItem(item, onEvent, navEvent)
                 }
             }
         }

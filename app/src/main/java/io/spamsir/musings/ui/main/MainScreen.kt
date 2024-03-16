@@ -42,6 +42,7 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import io.spamsir.musings.data.domain.Event
 import io.spamsir.musings.ui.listitems.NoteListItem
 import io.spamsir.musings.ui.allnotes.AllNotesScreen
 import io.spamsir.musings.ui.favorites.FavoritesScreen
@@ -49,7 +50,6 @@ import io.spamsir.musings.ui.home.HomeScreen
 import io.spamsir.musings.ui.allnotes.AllNotesViewModel
 import io.spamsir.musings.ui.favorites.FavoritesViewModel
 import io.spamsir.musings.ui.home.HomeViewModel
-import io.spamsir.musings.ui.listitems.NoteViewModel
 
 data class BottomNavigationItem(
     val title: String,
@@ -59,9 +59,7 @@ data class BottomNavigationItem(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen(state: MainState, onEvent: (MainEvent) -> Unit, navEvent: (String) -> Unit) {
-
-    val noteViewModel: NoteViewModel = viewModel(factory = NoteViewModel.Factory)
+fun MainScreen(state: MainState, onEvent: (Event) -> Unit, navEvent: (String) -> Unit) {
 
     val homeViewModel: HomeViewModel = viewModel(factory = HomeViewModel.Factory)
     val allNotesViewModel: AllNotesViewModel = viewModel(factory = AllNotesViewModel.Factory)
@@ -99,7 +97,9 @@ fun MainScreen(state: MainState, onEvent: (MainEvent) -> Unit, navEvent: (String
                 onQueryChange = { onEvent(MainEvent.OnQueryChange(it)) },
                 onSearch = { onEvent(MainEvent.OnQueryChange(it)) },
                 active = state.isSearching,
-                onActiveChange = { onEvent(MainEvent.OnToggle) },
+                onActiveChange = {
+                    onEvent(MainEvent.OnToggle)
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(
@@ -138,7 +138,7 @@ fun MainScreen(state: MainState, onEvent: (MainEvent) -> Unit, navEvent: (String
             ) {
                 LazyColumn {
                     items(state.notesList) { note ->
-                        NoteListItem(note, noteViewModel::onEvent, navEvent)
+                        NoteListItem(note, onEvent, navEvent)
                     }
                 }
             }
@@ -185,21 +185,21 @@ fun MainScreen(state: MainState, onEvent: (MainEvent) -> Unit, navEvent: (String
                     homeViewModel.loadData()
                 }
                 val homeState = homeViewModel.state.collectAsState()
-                HomeScreen(homeState.value, navEvent)
+                HomeScreen(homeState.value, homeViewModel::onEvent, navEvent)
             }
             composable("All Musings") {
                 LaunchedEffect(Unit) {
                     allNotesViewModel.loadData()
                 }
                 val allNotesState = allNotesViewModel.state.collectAsState()
-                AllNotesScreen(allNotesState.value, navEvent)
+                AllNotesScreen(allNotesState.value, allNotesViewModel::onEvent, navEvent)
             }
             composable("Favorites") {
                 LaunchedEffect(Unit) {
                     favoritesViewModel.loadData()
                 }
                 val favoritesState = favoritesViewModel.state.collectAsState()
-                FavoritesScreen(favoritesState.value, navEvent)
+                FavoritesScreen(favoritesState.value, favoritesViewModel::onEvent, navEvent)
             }
         }
     }

@@ -7,6 +7,8 @@ import androidx.lifecycle.viewmodel.CreationExtras
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.spamsir.musings.data.database.NoteDatabase
 import io.spamsir.musings.data.database.NoteDatabaseDao
+import io.spamsir.musings.data.domain.Event
+import io.spamsir.musings.ui.listitems.NoteEvent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -25,7 +27,7 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             mutableState.value = mutableState.value.copy(
                 allNotes = noteDao.getAllNotes(),
-                notesList = state.value.allNotes.filter { note -> note.title.uppercase().contains(state.value.searchQuery.trim().uppercase()) ||
+                notesList = noteDao.getAllNotes().filter { note -> note.title.uppercase().contains(state.value.searchQuery.trim().uppercase()) ||
                         note.content.uppercase().contains(state.value.searchQuery.trim().uppercase()) }
             )
         }
@@ -44,11 +46,12 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun onEvent(event: MainEvent) {
-        viewModelScope.launch {
+    fun onEvent(event: Event) {
+        viewModelScope.launch(Dispatchers.IO) {
             when (event) {
                 is MainEvent.OnQueryChange -> onSearchQueryChange(event.text)
                 is MainEvent.OnToggle -> onToggleSearch()
+                is NoteEvent.UpdateNote -> noteDao.update(event.key, event.isLiked)
             }
             loadData()
         }

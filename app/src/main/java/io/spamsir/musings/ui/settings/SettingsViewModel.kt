@@ -46,12 +46,10 @@ class SettingsViewModel @Inject constructor(
                         settings = event.settings
                     )
                 }
-
                 is SettingsEvent.SetNotification -> {
                     setNotification(event.time)
                 }
             }
-            loadSettings()
         }
     }
 
