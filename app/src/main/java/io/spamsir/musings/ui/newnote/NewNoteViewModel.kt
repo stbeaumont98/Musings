@@ -59,6 +59,12 @@ class NewNoteViewModel @Inject constructor(
         return noteDao.getNoteFromDate(start.timeInMillis)
     }
 
+    init {
+        mutableState.value = mutableState.value.copy(
+            settings = Settings(firstLaunch = false)
+        )
+    }
+
     companion object {
         val Factory: ViewModelProvider.Factory = object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
