@@ -1,4 +1,4 @@
-package io.spamsir.musings.ui.allnotes
+package io.spamsir.musings.ui.main.favorites
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -14,22 +14,22 @@ import io.spamsir.musings.ui.listitems.NoteEvent
 import io.spamsir.musings.ui.listitems.NoteListItem
 
 @Composable
-fun AllNotesScreen(state: AllNotesState, onEvent: (NoteEvent) -> Unit, navEvent: (String) -> Unit) {
+fun FavoritesScreen(state: FavoritesState, onEvent: (NoteEvent) -> Unit, navEvent: (String) -> Unit) {
 
     Surface(
         Modifier.fillMaxSize()
     ) {
-        if (state.allNotes.isEmpty()) {
+        if (state.favNotes.isEmpty()) {
             Column(
                 modifier = Modifier.fillMaxSize(),
                 verticalArrangement = Arrangement.SpaceEvenly,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(text = "No Musings yet!")
+                Text(text = "No favorites yet!")
             }
         } else {
             LazyColumn(modifier = Modifier.fillMaxSize()) {
-                itemsIndexed(state.allNotes) { _, item ->
+                itemsIndexed(state.favNotes) { _, item ->
                     NoteListItem(item, onEvent, navEvent)
                 }
             }
@@ -39,11 +39,12 @@ fun AllNotesScreen(state: AllNotesState, onEvent: (NoteEvent) -> Unit, navEvent:
 
 //@Preview
 //@Composable
-//fun AllNotesScreenPreview() {
-//    MusingsTheme {
-//        AllNotesScreen(
-//            AllNotesState(
-//                allNotes = listOf()
+//fun FavoritesScreenPreview() {
+//    val f = listOf(Note(), Note())
+//    MaterialTheme {
+//        FavoritesScreen(
+//            FavoritesState(
+//                favNotes = listOf()
 //            )
 //        ) {}
 //    }

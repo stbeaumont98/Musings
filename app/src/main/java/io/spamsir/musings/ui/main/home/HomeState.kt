@@ -1,4 +1,4 @@
-package io.spamsir.musings.ui.home
+package io.spamsir.musings.ui.main.home
 
 import io.spamsir.musings.data.domain.Note
 

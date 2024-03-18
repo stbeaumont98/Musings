@@ -1,4 +1,4 @@
-package io.spamsir.musings.ui.allnotes
+package io.spamsir.musings.ui.main.allnotes
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider

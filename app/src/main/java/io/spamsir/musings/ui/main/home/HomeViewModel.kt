@@ -1,4 +1,4 @@
-package io.spamsir.musings.ui.home
+package io.spamsir.musings.ui.main.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider

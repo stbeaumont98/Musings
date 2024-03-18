@@ -44,12 +44,12 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import io.spamsir.musings.data.domain.Event
 import io.spamsir.musings.ui.listitems.NoteListItem
-import io.spamsir.musings.ui.allnotes.AllNotesScreen
-import io.spamsir.musings.ui.favorites.FavoritesScreen
-import io.spamsir.musings.ui.home.HomeScreen
-import io.spamsir.musings.ui.allnotes.AllNotesViewModel
-import io.spamsir.musings.ui.favorites.FavoritesViewModel
-import io.spamsir.musings.ui.home.HomeViewModel
+import io.spamsir.musings.ui.main.allnotes.AllNotesScreen
+import io.spamsir.musings.ui.main.favorites.FavoritesScreen
+import io.spamsir.musings.ui.main.home.HomeScreen
+import io.spamsir.musings.ui.main.allnotes.AllNotesViewModel
+import io.spamsir.musings.ui.main.favorites.FavoritesViewModel
+import io.spamsir.musings.ui.main.home.HomeViewModel
 
 data class BottomNavigationItem(
     val title: String,

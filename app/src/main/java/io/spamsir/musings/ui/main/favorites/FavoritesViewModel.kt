@@ -1,4 +1,4 @@
-package io.spamsir.musings.ui.favorites
+package io.spamsir.musings.ui.main.favorites
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider

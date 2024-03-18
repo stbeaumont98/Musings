@@ -1,4 +1,4 @@
-package io.spamsir.musings.ui.home
+package io.spamsir.musings.ui.main.home
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
