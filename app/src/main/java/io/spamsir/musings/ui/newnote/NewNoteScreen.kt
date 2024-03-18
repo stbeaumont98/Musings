@@ -127,7 +127,9 @@ fun NewNoteScreen(state: NewNoteState, nextTime: Long, onEvent: (NewNoteEvent) -
                     ) {
                         Text("Cancel")
                     }
-                    Button(onClick = {
+                    Button(
+                        enabled = (title.value != "" || content.value != ""),
+                        onClick = {
                         CoroutineScope(Dispatchers.IO).launch {
                             val note = Note(
                                 Calendar.getInstance().timeInMillis,
