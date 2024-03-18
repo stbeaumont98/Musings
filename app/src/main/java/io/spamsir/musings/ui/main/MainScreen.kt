@@ -3,7 +3,10 @@ package io.spamsir.musings.ui.main
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -136,7 +139,11 @@ fun MainScreen(state: MainState, onEvent: (Event) -> Unit, navEvent: (String) ->
                     }
                 }
             ) {
-                LazyColumn {
+                LazyColumn(
+                    modifier = Modifier
+                        .statusBarsPadding()
+                        .navigationBarsPadding().imePadding()
+                ) {
                     items(state.notesList) { note ->
                         NoteListItem(note, {
                             onEvent(it)
