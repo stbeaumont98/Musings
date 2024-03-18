@@ -221,8 +221,19 @@ fun SettingsScreen(state: SettingsState, onEvent: (SettingsEvent) -> Unit, navEv
                     title = "Select Start Time",
                     onCancel = { showStartTimePicker.value = false },
                     onConfirm = {
-                        state.settings.startTime.hour = timePickerState.value.hour
-                        state.settings.startTime.minute = timePickerState.value.minute
+                        if (timePickerState.value.hour > state.settings.endTime.hour) {
+                            state.settings.startTime.hour = state.settings.endTime.hour
+                            state.settings.startTime.minute = state.settings.endTime.minute
+                        } else if (timePickerState.value.hour == state.settings.endTime.hour) {
+                            state.settings.startTime.hour = timePickerState.value.hour
+                            if (timePickerState.value.minute > state.settings.endTime.minute)
+                                state.settings.startTime.minute = state.settings.endTime.minute
+                            else
+                                state.settings.startTime.minute = timePickerState.value.minute
+                        } else {
+                            state.settings.startTime.hour = timePickerState.value.hour
+                            state.settings.startTime.minute = timePickerState.value.minute
+                        }
                         showStartTimePicker.value = false
                     },
                     state = timePickerState.value
@@ -233,8 +244,19 @@ fun SettingsScreen(state: SettingsState, onEvent: (SettingsEvent) -> Unit, navEv
                     title = "Select End Time",
                     onCancel = { showEndTimePicker.value = false },
                     onConfirm = {
-                        state.settings.endTime.hour = timePickerState.value.hour
-                        state.settings.endTime.minute = timePickerState.value.minute
+                        if (timePickerState.value.hour < state.settings.startTime.hour) {
+                            state.settings.endTime.hour = state.settings.startTime.hour
+                            state.settings.endTime.minute = state.settings.startTime.minute
+                        } else if (timePickerState.value.hour == state.settings.startTime.hour) {
+                            state.settings.endTime.hour = timePickerState.value.hour
+                            if (timePickerState.value.minute < state.settings.startTime.minute)
+                                state.settings.endTime.minute = state.settings.startTime.minute
+                            else
+                                state.settings.endTime.minute = timePickerState.value.minute
+                        } else {
+                            state.settings.endTime.hour = timePickerState.value.hour
+                            state.settings.endTime.minute = timePickerState.value.minute
+                        }
                         showEndTimePicker.value = false
                     },
                     state = timePickerState.value
