@@ -38,9 +38,7 @@ class HomeViewModel @Inject constructor(
     fun onEvent(event: NoteEvent) {
         viewModelScope.launch(Dispatchers.IO) {
             when (event) {
-                is NoteEvent.UpdateNote -> {
-                    noteDao.update(event.key, event.isLiked)
-                }
+                is NoteEvent.UpdateNote -> noteDao.update(event.key, event.isLiked)
             }
             loadData()
         }

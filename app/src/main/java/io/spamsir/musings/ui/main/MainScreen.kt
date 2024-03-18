@@ -138,7 +138,12 @@ fun MainScreen(state: MainState, onEvent: (Event) -> Unit, navEvent: (String) ->
             ) {
                 LazyColumn {
                     items(state.notesList) { note ->
-                        NoteListItem(note, onEvent, navEvent)
+                        NoteListItem(note, {
+                            onEvent(it)
+                            homeViewModel.onEvent(it)
+                            allNotesViewModel.onEvent(it)
+                            favoritesViewModel.onEvent(it)
+                        }, navEvent)
                     }
                 }
             }
