@@ -36,6 +36,7 @@ android {
             ndk {
                 debugSymbolLevel 'FULL'
             }
+            signingConfig signingConfigs.debug
 
         }
     }
