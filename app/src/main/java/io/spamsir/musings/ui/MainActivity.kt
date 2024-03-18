@@ -91,10 +91,10 @@ class MainActivity : ComponentActivity() {
                         }
                         composable("new_note") {
                             LaunchedEffect(Unit) {
-                                newNoteViewModel.loadData(nextTime)
+                                newNoteViewModel.loadData()
                             }
                             val state = newNoteViewModel.state.collectAsState()
-                            NewNoteScreen(state.value, newNoteViewModel::onEvent) {
+                            NewNoteScreen(state.value, nextTime, newNoteViewModel::onEvent) {
                                 navController.navigate("main") {
                                     popUpTo("new_note") { inclusive = true }
                                 }
@@ -115,10 +115,7 @@ class MainActivity : ComponentActivity() {
                                     annotationViewModel.loadData(it)
                                 }
                                 val state = annotationViewModel.state.collectAsState()
-                                AnnotateScreen(
-                                    state = state.value,
-                                    onEvent = annotationViewModel::onEvent
-                                ) {
+                                AnnotateScreen(state.value, annotationViewModel::onEvent) {
                                     dest -> navController.popBackStack(dest, false)
                                 }
                             }
@@ -149,7 +146,6 @@ class MainActivity : ComponentActivity() {
     }
 
     companion object {
-        private const val REQUEST_CODE_PERMISSIONS = 10
         @RequiresApi(Build.VERSION_CODES.TIRAMISU)
         val REQUIRED_PERMISSIONS =
             mutableListOf (

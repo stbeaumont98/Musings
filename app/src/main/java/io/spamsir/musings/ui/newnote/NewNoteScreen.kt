@@ -36,7 +36,7 @@ import java.util.Calendar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun NewNoteScreen(state: NewNoteState, onEvent: (NewNoteEvent) -> Unit, navEvent: () -> Unit) {
+fun NewNoteScreen(state: NewNoteState, nextTime: Long, onEvent: (NewNoteEvent) -> Unit, navEvent: () -> Unit) {
 
     val showTodayDialog = remember { mutableStateOf(false) }
 
@@ -44,13 +44,17 @@ fun NewNoteScreen(state: NewNoteState, onEvent: (NewNoteEvent) -> Unit, navEvent
 
     val outOfTime = remember { mutableStateOf(false) }
 
-    val timer = object : CountDownTimer(state.nextTime - Calendar.getInstance().timeInMillis, 1000) {
+    val isRunning = remember(false) { mutableStateOf(false) }
+
+    val timer = object : CountDownTimer(nextTime - Calendar.getInstance().timeInMillis, 1000) {
 
         override fun onTick(p0: Long) {
+            isRunning.value = true
             subtitle.value = String.format("%d:%02d", p0 / 60000, (p0 / 1000) % 60)
         }
 
         override fun onFinish() {
+            isRunning.value = false
             outOfTime.value = true
         }
 
@@ -90,7 +94,7 @@ fun NewNoteScreen(state: NewNoteState, onEvent: (NewNoteEvent) -> Unit, navEvent
                 OutlinedTextField(
                     value = content.value,
                     onValueChange = { content.value = it },
-                    label = { Text("What are your thoughts?") },
+                    label = { Text("What are you thinking?") },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(300.dp)
@@ -116,6 +120,7 @@ fun NewNoteScreen(state: NewNoteState, onEvent: (NewNoteEvent) -> Unit, navEvent
                                     )
                                 )
                             }
+                            timer.cancel()
                             navEvent()
                         },
                         modifier = Modifier.padding(end = 16.dp)
@@ -144,6 +149,7 @@ fun NewNoteScreen(state: NewNoteState, onEvent: (NewNoteEvent) -> Unit, navEvent
                                 )
                             )
                         }
+                        timer.cancel()
                         navEvent()
                     }) {
                         Text("Save")
@@ -166,10 +172,12 @@ fun NewNoteScreen(state: NewNoteState, onEvent: (NewNoteEvent) -> Unit, navEvent
                 ) {}
             }
         } else {
-            timer.start()
+            if (!isRunning.value)
+                timer.start()
         }
 
         if (outOfTime.value) {
+            timer.cancel()
             AlertDialog(
                 title = "Too bad!",
                 message = "You ran out of time. Don't worry, there will be other opportunities!",
@@ -193,6 +201,7 @@ fun NewNoteScreen(state: NewNoteState, onEvent: (NewNoteEvent) -> Unit, navEvent
         }
 
         if (showTodayDialog.value) {
+            timer.cancel()
             AlertDialog(
                 title = "Too bad!",
                 message = "A Musing was already recorded today. Try again tomorrow!",
@@ -221,6 +230,6 @@ fun NewNoteScreen(state: NewNoteState, onEvent: (NewNoteEvent) -> Unit, navEvent
 @Composable
 fun NewNoteScreenPreview() {
     MaterialTheme {
-        NewNoteScreen(NewNoteState(), onEvent = {}) {}
+        NewNoteScreen(NewNoteState(), 0L, onEvent = {}) {}
     }
 }
