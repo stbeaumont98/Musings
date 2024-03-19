@@ -53,6 +53,7 @@ import io.spamsir.musings.data.domain.Settings
 import io.spamsir.musings.notifications.cancelNotifications
 import java.util.Calendar
 import java.util.Locale
+import kotlin.random.Random
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -117,11 +118,11 @@ fun SettingsScreen(state: SettingsState, onEvent: (SettingsEvent) -> Unit, navEv
 
                             onEvent(
                                 SettingsEvent.SetNotification(
-//                                    if (startCal.timeInMillis < endCal.timeInMillis) Random.nextLong(
-//                                        startCal.timeInMillis,
-//                                        endCal.timeInMillis
-//                                    ) else startCal.timeInMillis
-                                Calendar.getInstance().timeInMillis + 10000
+                                    if (startCal.timeInMillis < endCal.timeInMillis) Random.nextLong(
+                                        startCal.timeInMillis,
+                                        endCal.timeInMillis
+                                    ) else startCal.timeInMillis
+//                                Calendar.getInstance().timeInMillis + 10000
                                 )
                             )
                         }
