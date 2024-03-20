@@ -5,11 +5,14 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
+import io.spamsir.musings.data.domain.Note
 import io.spamsir.musings.ui.listitems.NoteEvent
 import io.spamsir.musings.ui.listitems.NoteListItem
 
@@ -37,15 +40,20 @@ fun FavoritesScreen(state: FavoritesState, onEvent: (NoteEvent) -> Unit, navEven
     }
 }
 
-//@Preview
-//@Composable
-//fun FavoritesScreenPreview() {
-//    val f = listOf(Note(), Note())
-//    MaterialTheme {
-//        FavoritesScreen(
-//            FavoritesState(
-//                favNotes = listOf()
-//            )
-//        ) {}
-//    }
-//}
+@Preview
+@Composable
+fun FavoritesScreenPreview() {
+    MaterialTheme {
+        FavoritesScreen(
+            FavoritesState(
+                favNotes = listOf(
+                    Note(isLiked = true),
+                    Note(isLiked = true),
+                    Note(isLiked = true),
+                    Note(isLiked = true)
+                )
+            ),
+            {}
+        ) {}
+    }
+}
