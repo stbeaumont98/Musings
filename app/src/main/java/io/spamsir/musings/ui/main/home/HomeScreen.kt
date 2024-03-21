@@ -23,6 +23,7 @@ import io.spamsir.musings.data.domain.Note
 import io.spamsir.musings.ui.listitems.NoteEvent
 import io.spamsir.musings.ui.listitems.NoteListItem
 import io.spamsir.musings.ui.listitems.NoteListItemSimplified
+import io.spamsir.musings.ui.main.states.HomeState
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale

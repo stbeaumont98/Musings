@@ -31,7 +31,6 @@ import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -39,8 +38,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -50,9 +49,7 @@ import io.spamsir.musings.ui.listitems.NoteListItem
 import io.spamsir.musings.ui.main.allnotes.AllNotesScreen
 import io.spamsir.musings.ui.main.favorites.FavoritesScreen
 import io.spamsir.musings.ui.main.home.HomeScreen
-import io.spamsir.musings.ui.main.allnotes.AllNotesViewModel
-import io.spamsir.musings.ui.main.favorites.FavoritesViewModel
-import io.spamsir.musings.ui.main.home.HomeViewModel
+import io.spamsir.musings.ui.main.states.MainState
 
 data class BottomNavigationItem(
     val title: String,
@@ -63,10 +60,6 @@ data class BottomNavigationItem(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(state: MainState, onEvent: (Event) -> Unit, navEvent: (String) -> Unit) {
-
-    val homeViewModel: HomeViewModel = viewModel(factory = HomeViewModel.Factory)
-    val allNotesViewModel: AllNotesViewModel = viewModel(factory = AllNotesViewModel.Factory)
-    val favoritesViewModel: FavoritesViewModel = viewModel(factory = FavoritesViewModel.Factory)
 
     val navController = rememberNavController()
 
@@ -96,10 +89,10 @@ fun MainScreen(state: MainState, onEvent: (Event) -> Unit, navEvent: (String) ->
         topBar = {
             val focusManager = LocalFocusManager.current
             SearchBar(
-                query = state.searchQuery,
+                query = state.searchState.searchQuery,
                 onQueryChange = { onEvent(MainEvent.OnQueryChange(it)) },
                 onSearch = { onEvent(MainEvent.OnQueryChange(it)) },
-                active = state.isSearching,
+                active = state.searchState.isSearching,
                 onActiveChange = {
                     onEvent(MainEvent.OnToggle)
                 },
@@ -123,9 +116,9 @@ fun MainScreen(state: MainState, onEvent: (Event) -> Unit, navEvent: (String) ->
                     )
                 },
                 colors = SearchBarDefaults.colors(),
-                tonalElevation = if (state.isSearching) 0.dp else 6.dp,
+                tonalElevation = if (state.searchState.isSearching) 0.dp else 6.dp,
                 trailingIcon = {
-                    if (!state.isSearching) {
+                    if (!state.searchState.isSearching) {
                         IconButton(
                             onClick = { navEvent("settings") }
                         ) {
@@ -144,12 +137,9 @@ fun MainScreen(state: MainState, onEvent: (Event) -> Unit, navEvent: (String) ->
                         .statusBarsPadding()
                         .navigationBarsPadding().imePadding()
                 ) {
-                    items(state.notesList) { note ->
+                    items(state.searchState.notesList) { note ->
                         NoteListItem(note, {
                             onEvent(it)
-                            homeViewModel.onEvent(it)
-                            allNotesViewModel.onEvent(it)
-                            favoritesViewModel.onEvent(it)
                         }, navEvent)
                     }
                 }
@@ -160,7 +150,7 @@ fun MainScreen(state: MainState, onEvent: (Event) -> Unit, navEvent: (String) ->
             }
         },
         bottomBar =  {
-            if (!state.isSearching) {
+            if (!state.searchState.isSearching) {
                 NavigationBar {
                     items.forEachIndexed { index, item ->
                         NavigationBarItem(
@@ -193,36 +183,24 @@ fun MainScreen(state: MainState, onEvent: (Event) -> Unit, navEvent: (String) ->
             startDestination = "Home",
             modifier = Modifier.padding(innerPadding)) {
             composable("Home") {
-                LaunchedEffect(Unit) {
-                    homeViewModel.loadData()
-                }
-                val homeState = homeViewModel.state.collectAsState()
-                HomeScreen(homeState.value, homeViewModel::onEvent, navEvent)
+                HomeScreen(state.homeState, onEvent, navEvent)
             }
             composable("All Musings") {
-                LaunchedEffect(Unit) {
-                    allNotesViewModel.loadData()
-                }
-                val allNotesState = allNotesViewModel.state.collectAsState()
-                AllNotesScreen(allNotesState.value, allNotesViewModel::onEvent, navEvent)
+                AllNotesScreen(state.allNotesState, onEvent, navEvent)
             }
             composable("Favorites") {
-                LaunchedEffect(Unit) {
-                    favoritesViewModel.loadData()
-                }
-                val favoritesState = favoritesViewModel.state.collectAsState()
-                FavoritesScreen(favoritesState.value, favoritesViewModel::onEvent, navEvent)
+                FavoritesScreen(state.favoritesState, onEvent, navEvent)
             }
         }
     }
 }
 
-//@Preview
-//@Composable
-//fun MainScreenPreview() {
-//    MaterialTheme {
-//        MainScreen(state = MainState(), onEvent = {}) {
-//
-//        }
-//    }
-//}
+@Preview
+@Composable
+fun MainScreenPreview() {
+    MaterialTheme {
+        MainScreen(
+            state = MainState(),
+            onEvent = {}) {}
+    }
+}

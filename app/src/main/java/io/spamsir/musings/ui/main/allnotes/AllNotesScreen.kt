@@ -15,6 +15,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import io.spamsir.musings.data.domain.Note
 import io.spamsir.musings.ui.listitems.NoteEvent
 import io.spamsir.musings.ui.listitems.NoteListItem
+import io.spamsir.musings.ui.main.states.AllNotesState
 
 @Composable
 fun AllNotesScreen(state: AllNotesState, onEvent: (NoteEvent) -> Unit, navEvent: (String) -> Unit) {

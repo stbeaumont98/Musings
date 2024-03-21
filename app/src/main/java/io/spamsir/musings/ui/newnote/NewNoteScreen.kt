@@ -46,7 +46,9 @@ fun NewNoteScreen(state: NewNoteState, nextTime: Long, onEvent: (NewNoteEvent) -
 
     val isRunning = remember(false) { mutableStateOf(false) }
 
-    val timer = object : CountDownTimer(nextTime - Calendar.getInstance().timeInMillis, 1000) {
+    val millisInFuture = if (state.settings.firstLaunch) 120000 else nextTime - Calendar.getInstance().timeInMillis
+
+    val timer = object : CountDownTimer(millisInFuture, 1000) {
 
         override fun onTick(p0: Long) {
             isRunning.value = true
@@ -232,6 +234,8 @@ fun NewNoteScreen(state: NewNoteState, nextTime: Long, onEvent: (NewNoteEvent) -
 @Composable
 fun NewNoteScreenPreview() {
     MaterialTheme {
-        NewNoteScreen(NewNoteState(), 0L, onEvent = {}) {}
+        NewNoteScreen(NewNoteState(
+            settings = Settings(firstLaunch = false)
+        ), Calendar.getInstance().timeInMillis + 120000, onEvent = {}) {}
     }
 }

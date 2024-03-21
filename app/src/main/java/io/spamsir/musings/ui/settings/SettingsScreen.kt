@@ -364,6 +364,8 @@ fun CheckPermissions() {
 @Composable
 fun SettingsScreenPreview() {
     MaterialTheme {
-        SettingsScreen(SettingsState(), onEvent = {}) {}
+        SettingsScreen(SettingsState(
+            settings = Settings(firstLaunch = false)
+        ), onEvent = {}) {}
     }
 }

@@ -15,6 +15,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import io.spamsir.musings.data.domain.Note
 import io.spamsir.musings.ui.listitems.NoteEvent
 import io.spamsir.musings.ui.listitems.NoteListItem
+import io.spamsir.musings.ui.main.states.FavoritesState
 
 @Composable
 fun FavoritesScreen(state: FavoritesState, onEvent: (NoteEvent) -> Unit, navEvent: (String) -> Unit) {

@@ -77,7 +77,10 @@ class MainActivity : ComponentActivity() {
                                 mainViewModel.loadData()
                             }
                             val state = mainViewModel.state.collectAsState()
-                            MainScreen(state.value, mainViewModel::onEvent) { dest -> navController.navigate(dest) }
+                            MainScreen(
+                                state.value,
+                                mainViewModel::onEvent
+                            ) { dest -> navController.navigate(dest) }
                         }
                         composable("settings") {
                             LaunchedEffect(Unit) {
