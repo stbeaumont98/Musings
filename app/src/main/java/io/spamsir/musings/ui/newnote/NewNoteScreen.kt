@@ -37,8 +37,6 @@ import java.util.Calendar
 @Composable
 fun NewNoteScreen(state: NewNoteState, nextTime: Long, onEvent: (NewNoteEvent) -> Unit, navEvent: () -> Unit) {
 
-    val showTodayDialog = remember { mutableStateOf(false) }
-
     val subtitle = remember { mutableStateOf("2:00") }
 
     val outOfTime = remember { mutableStateOf(false) }
