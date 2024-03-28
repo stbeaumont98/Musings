@@ -44,7 +44,7 @@ fun NewNoteScreen(state: NewNoteState, nextTime: Long, onEvent: (NewNoteEvent) -
 
     val outOfTime = remember { mutableStateOf(false) }
 
-    val isRunning = remember(false) { mutableStateOf(false) }
+    val isRunning = remember { mutableStateOf(false) }
 
     val millisInFuture = if (state.settings.firstLaunch) 120000 else nextTime - Calendar.getInstance().timeInMillis
 
@@ -74,10 +74,6 @@ fun NewNoteScreen(state: NewNoteState, nextTime: Long, onEvent: (NewNoteEvent) -
             )
         }
     ) { innerPadding ->
-
-        LaunchedEffect(Unit) {
-            showTodayDialog.value = (state.noteToday != null)
-        }
 
         val title = remember { mutableStateOf("") }
         val content = remember { mutableStateOf("") }
@@ -110,18 +106,6 @@ fun NewNoteScreen(state: NewNoteState, nextTime: Long, onEvent: (NewNoteEvent) -
                 ) {
                     OutlinedButton(
                         onClick = {
-                            if (state.settings.firstLaunch) {
-                                onEvent(
-                                    NewNoteEvent.SaveSettings(
-                                        Settings(
-                                            state.settings.userName,
-                                            state.settings.startTime,
-                                            state.settings.endTime,
-                                            false
-                                        )
-                                    )
-                                )
-                            }
                             timer.cancel()
                             navEvent()
                         },
@@ -141,18 +125,6 @@ fun NewNoteScreen(state: NewNoteState, nextTime: Long, onEvent: (NewNoteEvent) -
                             )
                             onEvent(NewNoteEvent.SaveNote(note))
                         }
-                        if (state.settings.firstLaunch) {
-                            onEvent(
-                                NewNoteEvent.SaveSettings(
-                                    Settings(
-                                        state.settings.userName,
-                                        state.settings.startTime,
-                                        state.settings.endTime,
-                                        false
-                                    )
-                                )
-                            )
-                        }
                         timer.cancel()
                         navEvent()
                     }) {
@@ -171,14 +143,22 @@ fun NewNoteScreen(state: NewNoteState, nextTime: Long, onEvent: (NewNoteEvent) -
                     positiveButton = "Continue",
                     onPositiveButton = {
                         dialogActive.value = false
+                        onEvent(
+                            NewNoteEvent.SaveSettings(
+                                Settings(
+                                    state.settings.userName,
+                                    state.settings.startTime,
+                                    state.settings.endTime,
+                                    false
+                                )
+                            )
+                        )
                         timer.start()
                     }
                 ) {}
             }
-        } else {
-            if (!isRunning.value)
-                timer.start()
-        }
+        } else
+            timer.start()
 
         if (outOfTime.value) {
             timer.cancel()
@@ -188,23 +168,12 @@ fun NewNoteScreen(state: NewNoteState, nextTime: Long, onEvent: (NewNoteEvent) -
                 positiveButton = "Continue",
                 onPositiveButton = {
                     outOfTime.value = false
-                    if (state.settings.firstLaunch) {
-                        onEvent(
-                            NewNoteEvent.SaveSettings(
-                                Settings(
-                                    state.settings.userName,
-                                    state.settings.startTime,
-                                    state.settings.endTime,
-                                    false
-                                )
-                            )
-                        )
-                    }
                     navEvent()
-                }) {}
+                }
+            ) {}
         }
 
-        if (showTodayDialog.value) {
+        if (state.noteToday != null) {
             timer.cancel()
             AlertDialog(
                 title = "Too bad!",
@@ -212,20 +181,9 @@ fun NewNoteScreen(state: NewNoteState, nextTime: Long, onEvent: (NewNoteEvent) -
                 positiveButton = "Continue",
                 onPositiveButton = {
                     outOfTime.value = false
-                    if (state.settings.firstLaunch) {
-                        onEvent(
-                            NewNoteEvent.SaveSettings(
-                                Settings(
-                                    state.settings.userName,
-                                    state.settings.startTime,
-                                    state.settings.endTime,
-                                    false
-                                )
-                            )
-                        )
-                    }
                     navEvent()
-                }) {}
+                }
+            ) {}
         }
     }
 }
