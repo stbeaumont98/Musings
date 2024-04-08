@@ -121,8 +121,8 @@ fun NewNoteScreen(state: NewNoteState, nextTime: Long, onEvent: (NewNoteEvent) -
                                 false
                             )
                             onEvent(NewNoteEvent.SaveNote(note))
+                            timer.cancel()
                         }
-                        timer.cancel()
                         navEvent()
                     }) {
                         Text("Save")

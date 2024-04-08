@@ -60,8 +60,7 @@ class NewNoteViewModel @Inject constructor(
 
     init {
         mutableState.value = mutableState.value.copy(
-            noteToday = null,
-            settings = Settings(firstLaunch = false)
+            noteToday = null
         )
     }
 
