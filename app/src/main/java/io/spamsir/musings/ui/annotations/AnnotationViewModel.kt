@@ -70,8 +70,8 @@ class AnnotationViewModel @Inject constructor(
             @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {
                 val application = checkNotNull(extras[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY])
-                val annotationDataSource = AnnotationDatabase.getInstance(application.applicationContext, CoroutineScope(Dispatchers.IO)).annotationDatabaseDao
-                val noteDataSource = NoteDatabase.getInstance(application.applicationContext, CoroutineScope(
+                val annotationDataSource = AnnotationDatabase.getDatabase(application.applicationContext, CoroutineScope(Dispatchers.IO)).annotationDatabaseDao
+                val noteDataSource = NoteDatabase.getDatabase(application.applicationContext, CoroutineScope(
                     Dispatchers.IO)
                 ).noteDatabaseDao
 

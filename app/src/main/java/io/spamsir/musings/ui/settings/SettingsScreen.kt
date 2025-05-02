@@ -118,11 +118,10 @@ fun SettingsScreen(state: SettingsState, onEvent: (SettingsEvent) -> Unit, navEv
 
                             onEvent(
                                 SettingsEvent.SetNotification(
-//                                    if (startCal.timeInMillis < endCal.timeInMillis) Random.nextLong(
-//                                        startCal.timeInMillis,
-//                                        endCal.timeInMillis
-//                                    ) else startCal.timeInMillis
-                                Calendar.getInstance().timeInMillis + 10000
+                                    if (startCal.timeInMillis < endCal.timeInMillis) Random.nextLong(
+                                        startCal.timeInMillis,
+                                        endCal.timeInMillis
+                                    ) else startCal.timeInMillis
                                 )
                             )
                         }

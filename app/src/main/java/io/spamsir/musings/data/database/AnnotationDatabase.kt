@@ -13,22 +13,18 @@ abstract class AnnotationDatabase : RoomDatabase() {
 
     companion object {
         @Volatile
-        private var INSTANCE: AnnotationDatabase? = null
+        private var Instance: AnnotationDatabase? = null
 
-        fun getInstance(context: Context, scope: CoroutineScope): AnnotationDatabase {
-            synchronized(this) {
-                var instance = INSTANCE
-                if (instance == null) {
-                    instance = Room.databaseBuilder(
-                        context.applicationContext,
-                        AnnotationDatabase::class.java,
-                        "annotations_database"
-                    )
-                        .fallbackToDestructiveMigration()
-                        .build()
-                    INSTANCE = instance
-                }
-                return instance
+        fun getDatabase(context: Context, scope: CoroutineScope): AnnotationDatabase {
+            return Instance ?: synchronized(this) {
+                Room.databaseBuilder(
+                    context.applicationContext,
+                    AnnotationDatabase::class.java,
+                    "annotations_database"
+                )
+                    .fallbackToDestructiveMigration(true)
+                    .build()
+                    .also { Instance = it }
             }
         }
     }

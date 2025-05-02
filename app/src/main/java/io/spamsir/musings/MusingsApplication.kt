@@ -25,6 +25,6 @@ class MusingsApplication : Application() {
         val context: Context = applicationContext()
     }
 
-    val database: NoteDatabase by lazy { NoteDatabase.getInstance(this, CoroutineScope(Dispatchers.IO)) }
+    val database: NoteDatabase by lazy { NoteDatabase.getDatabase(this, CoroutineScope(Dispatchers.IO)) }
 
 }
