@@ -20,7 +20,7 @@ interface NoteDatabaseDao {
     fun noteExistsOnDate(date: Long): Boolean
 
     @Query("SELECT * FROM notes_table WHERE date_time > :date AND date_time < :date + 86400000 ORDER BY noteId DESC LIMIT 1")
-    fun getNoteFromDate(date: Long): Note
+    fun getNoteFromDate(date: Long): Note?
 
     @Query("DELETE FROM notes_table")
     fun clear()

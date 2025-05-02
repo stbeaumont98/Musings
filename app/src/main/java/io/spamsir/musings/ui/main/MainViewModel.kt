@@ -80,7 +80,7 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    private fun getNoteToday() : Note {
+    private fun getNoteToday() : Note? {
         val start = Calendar.getInstance()
         start.set(Calendar.HOUR_OF_DAY, 0)
         start.set(Calendar.MINUTE, 0)
@@ -113,7 +113,7 @@ class MainViewModel @Inject constructor(
             @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {
                 val application = checkNotNull(extras[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY])
-                val dataSource = NoteDatabase.getInstance(application.applicationContext, CoroutineScope(
+                val dataSource = NoteDatabase.getDatabase(application.applicationContext, CoroutineScope(
                     Dispatchers.IO)
                 ).noteDatabaseDao
 
