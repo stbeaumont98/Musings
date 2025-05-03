@@ -58,7 +58,7 @@ fun NoteListItem(note: Note, onEvent: (NoteEvent) -> Unit, navEvent: (String) ->
 
     Card(
         onClick = {
-            navEvent("annotate_screen/" + note.noteId.toString())
+            navEvent("comment_screen/" + note.noteId.toString())
         },
         modifier = Modifier
             .padding(8.dp)

@@ -32,6 +32,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.util.Calendar
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -49,7 +50,7 @@ fun NewNoteScreen(state: NewNoteState, nextTime: Long, onEvent: (NewNoteEvent) -
 
         override fun onTick(p0: Long) {
             isRunning.value = true
-            subtitle.value = String.format("%d:%02d", p0 / 60000, (p0 / 1000) % 60)
+            subtitle.value = String.format(Locale.US, "%d:%02d", p0 / 60000, (p0 / 1000) % 60)
         }
 
         override fun onFinish() {

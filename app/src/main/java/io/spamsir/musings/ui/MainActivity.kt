@@ -108,7 +108,7 @@ class MainActivity : ComponentActivity() {
                             }
                         }
                         composable(
-                            route = "annotate_screen/{noteId}",
+                            route = "comment_screen/{noteId}",
                             arguments = listOf(
                                 navArgument("noteId") {
                                     defaultValue = 0L

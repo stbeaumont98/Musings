@@ -18,7 +18,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CommentsViewModel @Inject constructor(
-    private val annotationDao: CommentDatabaseDao,
+    private val commentDao: CommentDatabaseDao,
     private val noteDao: NoteDatabaseDao
 ): ViewModel() {
 
@@ -32,7 +32,7 @@ class CommentsViewModel @Inject constructor(
                 title = noteDao.get(key).title,
                 content = noteDao.get(key).content,
                 isLiked = noteDao.get(key).isLiked,
-                comments = annotationDao.getList(key)
+                comments = commentDao.getList(key)
             )
         }
     }
@@ -41,11 +41,11 @@ class CommentsViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             when (event) {
                 is CommentEvent.NewComment -> {
-                    annotationDao.insert(event.comment)
+                    commentDao.insert(event.comment)
                 }
 
                 is CommentEvent.UpdateComment -> {
-                    annotationDao.update(
+                    commentDao.update(
                         event.comment.dateTime,
                         event.comment.content,
                         event.comment.noteId,
@@ -54,7 +54,7 @@ class CommentsViewModel @Inject constructor(
                 }
 
                 is CommentEvent.RemoveComment -> {
-                    annotationDao.remove(event.id)
+                    commentDao.remove(event.id)
                 }
 
                 is CommentEvent.UpdateNote -> {
@@ -70,12 +70,12 @@ class CommentsViewModel @Inject constructor(
             @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {
                 val application = checkNotNull(extras[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY])
-                val annotationDataSource = CommentDatabase.getDatabase(application.applicationContext, CoroutineScope(Dispatchers.IO)).commentDatabaseDao
+                val commentDataSource = CommentDatabase.getDatabase(application.applicationContext, CoroutineScope(Dispatchers.IO)).commentDatabaseDao
                 val noteDataSource = NoteDatabase.getDatabase(application.applicationContext, CoroutineScope(
                     Dispatchers.IO)
                 ).noteDatabaseDao
 
-                return CommentsViewModel(annotationDataSource, noteDataSource) as T
+                return CommentsViewModel(commentDataSource, noteDataSource) as T
             }
         }
     }
