@@ -5,8 +5,8 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import java.util.Calendar
 
-@Entity(tableName = "annotations_table")
-data class Annotation(
+@Entity(tableName = "comments_table")
+data class Comment(
     @ColumnInfo(name = "date_time")
     val dateTime: Long = Calendar.getInstance().timeInMillis,
     @ColumnInfo(name = "content")
@@ -15,5 +15,5 @@ data class Annotation(
     val noteId: Long = 0L
 ) {
     @PrimaryKey(autoGenerate = true)
-    var annotationId: Long = 0L
+    var commentId: Long = 0L
 }

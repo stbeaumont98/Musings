@@ -12,19 +12,19 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.spamsir.musings.DateConverter
-import io.spamsir.musings.data.domain.Annotation
+import io.spamsir.musings.data.domain.Comment
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 
 @Composable
-fun AnnotationItem(annotation: Annotation, onClick: () -> Unit) {
+fun CommentItem(comment: Comment, onClick: () -> Unit) {
 
     val formatter = SimpleDateFormat("MMMM d, yyyy", Locale.US)
     val dateText: String
 
     val cal = Calendar.getInstance()
-    cal.time = DateConverter.toDate(annotation.dateTime)
+    cal.time = DateConverter.toDate(comment.dateTime)
 
     val diff = Calendar.getInstance().timeInMillis - cal.timeInMillis
     dateText = if (diff < ONE_MINUTE) {
@@ -34,7 +34,7 @@ fun AnnotationItem(annotation: Annotation, onClick: () -> Unit) {
     } else if (diff < ONE_DAY) {
         (diff / ONE_HOUR).toString() + " hour" + (if ((diff / ONE_HOUR).toInt() != 1) "s" else "") + " ago"
     } else {
-        formatter.format(DateConverter.toDate(annotation.dateTime))
+        formatter.format(DateConverter.toDate(comment.dateTime))
     }
 
     OutlinedCard(
@@ -53,7 +53,7 @@ fun AnnotationItem(annotation: Annotation, onClick: () -> Unit) {
                     .padding(horizontal = 8.dp)
             )
             Text(
-                text = annotation.content,
+                text = comment.content,
                 modifier = Modifier
                     .padding(bottom = 8.dp, start = 8.dp, end = 8.dp)
             )
@@ -63,9 +63,9 @@ fun AnnotationItem(annotation: Annotation, onClick: () -> Unit) {
 
 @Preview
 @Composable
-fun AnnotationItemPreview() {
-    val annotation = Annotation(content = "This Musing is fun!")
+fun CommentItemPreview() {
+    val comment = Comment(content = "This Musing is fun!")
     MaterialTheme {
-        AnnotationItem(annotation, {})
+        CommentItem(comment, {})
     }
 }

@@ -25,12 +25,12 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import dagger.hilt.android.AndroidEntryPoint
 import io.spamsir.musings.R
-import io.spamsir.musings.ui.annotations.AnnotateScreen
+import io.spamsir.musings.ui.comments.CommentScreen
 import io.spamsir.musings.ui.main.MainScreen
 import io.spamsir.musings.ui.newnote.NewNoteScreen
 import io.spamsir.musings.ui.settings.SettingsScreen
 import io.spamsir.musings.ui.theme.MusingsTheme
-import io.spamsir.musings.ui.annotations.AnnotationViewModel
+import io.spamsir.musings.ui.comments.CommentsViewModel
 import io.spamsir.musings.ui.main.MainViewModel
 import io.spamsir.musings.ui.newnote.NewNoteViewModel
 import io.spamsir.musings.ui.settings.SettingsViewModel
@@ -42,7 +42,7 @@ class MainActivity : ComponentActivity() {
     private val settingsViewModel: SettingsViewModel by viewModels(factoryProducer = { SettingsViewModel.Factory })
     private val mainViewModel: MainViewModel by viewModels(factoryProducer = { MainViewModel.Factory })
     private val newNoteViewModel: NewNoteViewModel by viewModels(factoryProducer = { NewNoteViewModel.Factory })
-    private val annotationViewModel: AnnotationViewModel by viewModels(factoryProducer = { AnnotationViewModel.Factory })
+    private val commentsViewModel: CommentsViewModel by viewModels(factoryProducer = { CommentsViewModel.Factory })
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -119,10 +119,10 @@ class MainActivity : ComponentActivity() {
                             val noteId = navBackStackEntry.arguments?.getLong("noteId")
                             noteId?.let {
                                 LaunchedEffect(Unit) {
-                                    annotationViewModel.loadData(it)
+                                    commentsViewModel.loadData(it)
                                 }
-                                val state = annotationViewModel.state.collectAsState()
-                                AnnotateScreen(state.value, annotationViewModel::onEvent) {
+                                val state = commentsViewModel.state.collectAsState()
+                                CommentScreen(state.value, commentsViewModel::onEvent) {
                                     dest -> navController.popBackStack(dest, false)
                                 }
                             }

@@ -1,4 +1,4 @@
-package io.spamsir.musings.ui.annotations
+package io.spamsir.musings.ui.comments
 
 import android.util.Log
 import androidx.compose.foundation.layout.Column
@@ -41,21 +41,21 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import io.spamsir.musings.ui.listitems.AnnotationItem
+import io.spamsir.musings.ui.listitems.CommentItem
 import io.spamsir.musings.R
-import io.spamsir.musings.data.domain.Annotation
+import io.spamsir.musings.data.domain.Comment
 import java.util.Calendar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AnnotateScreen(state: AnnotationState, onEvent: (AnnotationEvent) -> Unit, navEvent: (String) -> Unit) {
+fun CommentScreen(state: CommentsState, onEvent: (CommentEvent) -> Unit, navEvent: (String) -> Unit) {
 
     val focusRequester = remember { FocusRequester() }
 
     val isEditing = remember { mutableStateOf(false) }
     val isNew = remember { mutableStateOf(false) }
 
-    val annotationId = remember { mutableLongStateOf(-1L) }
+    val commentId = remember { mutableLongStateOf(-1L) }
 
     val content = remember { mutableStateOf("") }
 
@@ -81,7 +81,7 @@ fun AnnotateScreen(state: AnnotationState, onEvent: (AnnotationEvent) -> Unit, n
                         IconToggleButton(
                             checked = state.isLiked,
                             onCheckedChange = {
-                                onEvent(AnnotationEvent.UpdateNote(state.noteId, !state.isLiked))
+                                onEvent(CommentEvent.UpdateNote(state.noteId, !state.isLiked))
                             }
                         ) {
                             Icon(
@@ -103,7 +103,7 @@ fun AnnotateScreen(state: AnnotationState, onEvent: (AnnotationEvent) -> Unit, n
                         containerColor = BottomAppBarDefaults.bottomAppBarFabColor,
                         elevation = FloatingActionButtonDefaults.bottomAppBarFabElevation()
                     ) {
-                        Icon(Icons.Filled.Add, "Add a new annotation")
+                        Icon(Icons.Filled.Add, "Add a new comment")
                     }
                 }
             },
@@ -115,36 +115,36 @@ fun AnnotateScreen(state: AnnotationState, onEvent: (AnnotationEvent) -> Unit, n
                                 IconButton(onClick = {
                                     if (content.value != "") {
                                         Log.d("AM I GETTING HERE", "")
-                                        val annotation = Annotation(
+                                        val comment = Comment(
                                             Calendar.getInstance().timeInMillis,
                                             content.value,
                                             state.noteId
                                         )
                                         if (isNew.value) {
-                                            Log.d("NEW ANNOTATION", annotation.toString())
-                                            onEvent(AnnotationEvent.NewAnnotation(annotation))
+                                            Log.d("NEW COMMENT", comment.toString())
+                                            onEvent(CommentEvent.NewComment(comment))
                                         } else {
-                                            Log.d("EDIT ANNOTATION", annotation.toString())
-                                            annotation.annotationId = annotationId.longValue
-                                            onEvent(AnnotationEvent.UpdateAnnotation(annotation))
-                                            annotationId.longValue = -1L
+                                            Log.d("EDIT COMMENT", comment.toString())
+                                            comment.commentId = commentId.longValue
+                                            onEvent(CommentEvent.UpdateComment(comment))
+                                            commentId.longValue = -1L
                                         }
                                     }
                                     isEditing.value = false
                                     isNew.value = false
                                     content.value = ""
                                 }) {
-                                    Icon(Icons.Filled.Done, "Save annotation")
+                                    Icon(Icons.Filled.Done, "Save comment")
                                 }
                                 IconButton(onClick = {
                                     isEditing.value = false
                                     content.value = ""
                                     if (!isNew.value) {
-                                        onEvent(AnnotationEvent.RemoveAnnotation(annotationId.longValue))
+                                        onEvent(CommentEvent.RemoveComment(commentId.longValue))
                                     }
-                                    annotationId.longValue = -1L
+                                    commentId.longValue = -1L
                                 }) {
-                                    Icon(Icons.Filled.Delete, "Delete annotation")
+                                    Icon(Icons.Filled.Delete, "Delete comment")
                                 }
                             }
                         },
@@ -154,7 +154,7 @@ fun AnnotateScreen(state: AnnotationState, onEvent: (AnnotationEvent) -> Unit, n
                                     isEditing.value = false
                                     isNew.value = false
                                     content.value = ""
-                                    annotationId.longValue = -1L
+                                    commentId.longValue = -1L
                                 },
                                 containerColor = BottomAppBarDefaults.bottomAppBarFabColor,
                                 elevation = FloatingActionButtonDefaults.bottomAppBarFabElevation()
@@ -177,12 +177,12 @@ fun AnnotateScreen(state: AnnotationState, onEvent: (AnnotationEvent) -> Unit, n
                         .padding(16.dp)
                 )
                 LazyColumn {
-                    items(state.annotations) { annotation ->
-                        if (annotation.annotationId != annotationId.longValue) {
-                            AnnotationItem(annotation) {
+                    items(state.comments) { comment ->
+                        if (comment.commentId != commentId.longValue) {
+                            CommentItem(comment) {
                                 isEditing.value = true
-                                content.value = annotation.content
-                                annotationId.longValue = annotation.annotationId
+                                content.value = comment.content
+                                commentId.longValue = comment.commentId
                             }
                         }
                     }
@@ -229,16 +229,16 @@ fun AnnotateScreen(state: AnnotationState, onEvent: (AnnotationEvent) -> Unit, n
 
 @Preview
 @Composable
-fun AnnotateScreenPreview() {
+fun CommentScreenPreview() {
     MaterialTheme {
-        AnnotateScreen(
-            AnnotationState(
+        CommentScreen(
+            CommentsState(
             title = "Title",
             content = "Content",
             isLiked = true,
-            annotations = listOf(
-                Annotation(
-                    content = "This is an annotation!"
+            comments = listOf(
+                Comment(
+                    content = "This is an comment!"
                 )
             )
         ), {}) {}

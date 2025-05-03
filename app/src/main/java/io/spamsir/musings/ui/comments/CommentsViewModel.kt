@@ -1,12 +1,12 @@
-package io.spamsir.musings.ui.annotations
+package io.spamsir.musings.ui.comments
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.spamsir.musings.data.database.AnnotationDatabase
-import io.spamsir.musings.data.database.AnnotationDatabaseDao
+import io.spamsir.musings.data.database.CommentDatabase
+import io.spamsir.musings.data.database.CommentDatabaseDao
 import io.spamsir.musings.data.database.NoteDatabase
 import io.spamsir.musings.data.database.NoteDatabaseDao
 import kotlinx.coroutines.CoroutineScope
@@ -17,12 +17,12 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class AnnotationViewModel @Inject constructor(
-    private val annotationDao: AnnotationDatabaseDao,
+class CommentsViewModel @Inject constructor(
+    private val annotationDao: CommentDatabaseDao,
     private val noteDao: NoteDatabaseDao
 ): ViewModel() {
 
-    val mutableState = MutableStateFlow(AnnotationState())
+    val mutableState = MutableStateFlow(CommentsState())
     val state = mutableState.asStateFlow()
 
     fun loadData(key: Long) {
@@ -32,32 +32,32 @@ class AnnotationViewModel @Inject constructor(
                 title = noteDao.get(key).title,
                 content = noteDao.get(key).content,
                 isLiked = noteDao.get(key).isLiked,
-                annotations = annotationDao.getList(key)
+                comments = annotationDao.getList(key)
             )
         }
     }
 
-    fun onEvent(event: AnnotationEvent) {
+    fun onEvent(event: CommentEvent) {
         viewModelScope.launch(Dispatchers.IO) {
             when (event) {
-                is AnnotationEvent.NewAnnotation -> {
-                    annotationDao.insert(event.annotation)
+                is CommentEvent.NewComment -> {
+                    annotationDao.insert(event.comment)
                 }
 
-                is AnnotationEvent.UpdateAnnotation -> {
+                is CommentEvent.UpdateComment -> {
                     annotationDao.update(
-                        event.annotation.dateTime,
-                        event.annotation.content,
-                        event.annotation.noteId,
-                        event.annotation.annotationId
+                        event.comment.dateTime,
+                        event.comment.content,
+                        event.comment.noteId,
+                        event.comment.commentId
                     )
                 }
 
-                is AnnotationEvent.RemoveAnnotation -> {
+                is CommentEvent.RemoveComment -> {
                     annotationDao.remove(event.id)
                 }
 
-                is AnnotationEvent.UpdateNote -> {
+                is CommentEvent.UpdateNote -> {
                     noteDao.update(event.key, event.isLiked)
                 }
             }
@@ -70,12 +70,12 @@ class AnnotationViewModel @Inject constructor(
             @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {
                 val application = checkNotNull(extras[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY])
-                val annotationDataSource = AnnotationDatabase.getDatabase(application.applicationContext, CoroutineScope(Dispatchers.IO)).annotationDatabaseDao
+                val annotationDataSource = CommentDatabase.getDatabase(application.applicationContext, CoroutineScope(Dispatchers.IO)).commentDatabaseDao
                 val noteDataSource = NoteDatabase.getDatabase(application.applicationContext, CoroutineScope(
                     Dispatchers.IO)
                 ).noteDatabaseDao
 
-                return AnnotationViewModel(annotationDataSource, noteDataSource) as T
+                return CommentsViewModel(annotationDataSource, noteDataSource) as T
             }
         }
     }
