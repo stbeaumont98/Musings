@@ -20,7 +20,7 @@ abstract class CommentDatabase : RoomDatabase() {
                 Room.databaseBuilder(
                     context.applicationContext,
                     CommentDatabase::class.java,
-                    "annotations_database"
+                    "comments_database"
                 )
                     .fallbackToDestructiveMigration(true)
                     .build()
