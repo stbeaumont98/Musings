@@ -2,11 +2,9 @@ package io.spamsir.musings.ui.main
 
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -86,64 +84,81 @@ fun MainScreen(state: MainState, onEvent: (Event) -> Unit, navEvent: (String) ->
     }
 
     Scaffold (
+        modifier = Modifier.fillMaxWidth(),
         topBar = {
             val focusManager = LocalFocusManager.current
+            val onActiveChange: (Boolean) -> Unit = {
+                onEvent(MainEvent.OnToggle)
+            }
+            val colors1 = SearchBarDefaults.colors()
             SearchBar(
-                query = state.searchState.searchQuery,
-                onQueryChange = { onEvent(MainEvent.OnQueryChange(it)) },
-                onSearch = { onEvent(MainEvent.OnQueryChange(it)) },
-                active = state.searchState.isSearching,
-                onActiveChange = {
-                    onEvent(MainEvent.OnToggle)
+                inputField = {
+                    SearchBarDefaults.InputField(
+                        query = state.searchState.searchQuery,
+                        onQueryChange = { onEvent(MainEvent.OnQueryChange(it)) },
+                        onSearch = { onEvent(MainEvent.OnQueryChange(it)) },
+                        expanded = state.searchState.isSearching,
+                        onExpandedChange = onActiveChange,
+                        enabled = true,
+                        placeholder = { Text("Search") },
+                        leadingIcon = {
+                            Icon(
+                                imageVector = Icons.Rounded.Search,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        },
+                        trailingIcon = {
+                            if (!state.searchState.isSearching) {
+                                IconButton(
+                                    onClick = { navEvent("settings") }
+                                ) {
+                                    Icon(Icons.Filled.Settings, "Settings")
+                                }
+                            } else {
+                                IconButton(
+                                    onClick = { onEvent(MainEvent.OnToggle) }) {
+                                    Icon(Icons.Filled.Close, "Close Search")
+                                }
+                            }
+                        },
+                        interactionSource = null,
+                    )
+                },
+                expanded = state.searchState.isSearching,
+                onExpandedChange = onActiveChange,
+                shape = SearchBarDefaults.inputFieldShape,
+                colors = colors1,
+                tonalElevation = if (state.searchState.isSearching) 0.dp else 6.dp,
+                shadowElevation = SearchBarDefaults.ShadowElevation,
+                windowInsets = SearchBarDefaults.windowInsets,
+                content = {
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxSize()
+                    ) {
+                        items(state.searchState.notesList) { note ->
+                            NoteListItem(note, {
+                                onEvent(it)
+                            }, navEvent)
+                        }
+                    }
                 },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(
-                        PaddingValues(
-                            start = 12.dp,
-                            top = 2.dp,
-                            end = 12.dp,
-                            bottom = 12.dp
-                        )
+                        if (state.searchState.isSearching)
+                            PaddingValues(all = 0.dp)
+                        else
+                            PaddingValues(
+                                start = 12.dp,
+                                top = 2.dp,
+                                end = 12.dp,
+                                bottom = 12.dp
+                            )
                     )
                     .focusable(),
-                placeholder = { Text("Search") },
-                leadingIcon = {
-                    Icon(
-                        imageVector = Icons.Rounded.Search,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                },
-                colors = SearchBarDefaults.colors(),
-                tonalElevation = if (state.searchState.isSearching) 0.dp else 6.dp,
-                trailingIcon = {
-                    if (!state.searchState.isSearching) {
-                        IconButton(
-                            onClick = { navEvent("settings") }
-                        ) {
-                            Icon(Icons.Filled.Settings, "Settings")
-                        }
-                    } else {
-                        IconButton(
-                            onClick = { onEvent(MainEvent.OnToggle) }) {
-                            Icon(Icons.Filled.Close, "Close Search")
-                        }
-                    }
-                }
-            ) {
-                LazyColumn(
-                    modifier = Modifier
-                        .statusBarsPadding()
-                        .navigationBarsPadding().imePadding()
-                ) {
-                    items(state.searchState.notesList) { note ->
-                        NoteListItem(note, {
-                            onEvent(it)
-                        }, navEvent)
-                    }
-                }
-            }
+            )
 
             LaunchedEffect(Unit) {
                 focusManager.clearFocus()
